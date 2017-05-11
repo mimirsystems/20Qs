@@ -2,8 +2,9 @@
 
 ## Dependencies
 
-- Flask
-- Flask-Session
+- flask
+- flask-materialize
+- flask-wtf
 - SQL-Alchemy
 - python3
 

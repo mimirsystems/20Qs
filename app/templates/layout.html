@@ -1,20 +1,48 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>20 Questions</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}"/>
-  </head>
-  <body>
+{% extends "config.html" %}
 
-    <header>
-      <div class="container">
-        <h1 class="logo">20 Questions</h1>
-      </div>
-    </header>
+{% block title %}20 Questions{% endblock %}
 
+{% block navbar %}
+<nav class="black white-text nav-extended">
+  <div class="nav-wrapper">
+    <a href="#" class="brand-logo">20 Questions</a>
+    <a href="#" data-activates="mobile-nav" class="button-collapse"><i class="material-icons">menu</i></a>
+    <ul id="nav-mobile" class="right hide-on-med-and-down">
+      {% for nav in navs %}
+      <li><a href="{{ url_for(nav) }}">{{ nav.upper() }}</a></li>
+      {% endfor %}
+    </ul>
+    <ul class="side-nav" id="mobile-nav">
+      {% for nav in navs %}
+      <li class="tab"><a href="{{ url_for(nav) }}">{{ nav.upper() }}</a></li>
+      {% endfor %}
+    </ul>
+  </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="card">
     <div class="container">
-      {% block content %}
+      {% block main %}
+      Loading...
       {% endblock %}
     </div>
-  </body>
-</html>
+  </div>
+</div>
+{% endblock %}
+
+{% block footer %}
+<footer class="footer-copyright black white-text" style="width:100%; position: absolute; bottom: 0; padding-top:2px;">
+  <div class="container">
+    <div class="center">
+      Joshua Pratt and Deepanjan Chakrabarty &copy; 2017
+    </div>
+    <div class="center" style="padding:5px">
+      <iframe src="https://ghbtns.com/github-btn.html?user=Cypher1&repo=20Qs&type=watch&count=true&size=large" frameborder="0" scrolling="0" width="170px" height="30px"></iframe>
+    </div>
+  </div>
+</div>
+</footer>
+{% endblock %}

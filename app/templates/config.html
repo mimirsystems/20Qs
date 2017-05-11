@@ -1,0 +1,18 @@
+{% extends "material/base.html" %}
+{% import "material/utils.html" as util %}
+{% import "material/wtf.html" as wtf %}
+
+{% block metas %}
+{{ super() }}
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+  $( document ).ready(function(){
+    $(".button-collapse").sideNav();
+  })
+</script>
+{% endblock %}
+
