@@ -15,6 +15,25 @@ def home():
 def about():
     return render_template('about.html')
 
+@app.route('/new')
+def new_game():
+    # reset the user's game state
+    return render_template('new_game.html')
+
+@app.route('/question/')
+def question():
+    # display a question and a set of guesses
+    question_txt = "What is your favourite colour?"
+    options = [("Yes", 1), ("No", 0)]
+    guesses = [("kangaroo", 0.5), ("dog", 0.9), ("rabbit", 0.1)]
+    return render_template(
+        'question.html',
+        question=question_txt,
+        options=options,
+        guesses=sorted(guesses, key=lambda x: -x[1])
+    )
+
+
 @app.route('/set/<key>/<value>', methods=['GET'])
 def set_var(key, value):
     session[key] = value
