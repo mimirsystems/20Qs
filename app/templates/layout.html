@@ -3,18 +3,18 @@
 {% block title %}20 Questions{% endblock %}
 
 {% block navbar %}
-<nav class="{{nav_colour}} {{nav_text_colour}} nav-extended">
+<nav class="{{colour.nav}} {{colour.nav_text}} nav-extended">
   <div class="nav-wrapper">
-    <a href="#" class="{{primary_text_colour}} brand-logo">20 Questions</a>
+    <a href="#" class="{{colour.primary_text}} brand-logo">20 Questions</a>
     <a href="#" data-activates="mobile-nav" class="button-collapse"><i class="material-icons">menu</i></a>
     <ul id="nav-mobile" class="right hide-on-med-and-down">
       {% for nav in navs %}
-      <li><a class="{{nav_text_colour}}" href="{{ url_for(nav) }}">{{ nav.upper() }}</a></li>
+      <li><a class="{{colour.nav_text}}" href="{{ url_for(nav) }}">{{ nav.upper() }}</a></li>
       {% endfor %}
     </ul>
-    <ul class="{{nav_colour}} side-nav" id="mobile-nav">
+    <ul class="{{colour.nav}} side-nav" id="mobile-nav">
       {% for nav in navs %}
-      <li class="tab"><a class="{{nav_text_colour}}" href="{{ url_for(nav) }}">{{ nav.upper() }}</a></li>
+      <li class="tab"><a class="{{colour.nav_text}}" href="{{ url_for(nav) }}">{{ nav.upper() }}</a></li>
       {% endfor %}
     </ul>
   </div>
@@ -34,7 +34,7 @@
 {% endblock %}
 
 {% block footer %}
-<footer class="footer-copyright {{primary_colour}} {{primary_text_colour}}" style="width:100%; position: absolute; bottom: 0; padding-top:2px;">
+<footer class="footer-copyright {{colour.primary}} {{colour.primary_text}}" style="width:100%; position: absolute; bottom: 0; padding-top:2px;">
   <div class="container">
     <div class="center">
       Joshua Pratt and Deepanjan Chakrabarty &copy; 2017
