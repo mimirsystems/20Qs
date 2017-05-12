@@ -1,0 +1,8 @@
+{% extends "layout.html" %}
+{% block main %}
+  <h2>Welcome!</h2>
+  <p class="center">Think of an animal</p>
+  <a class="center" href="{{ url_for('question') }}">
+    Start game
+  </a>
+{% endblock %}

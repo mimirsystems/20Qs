@@ -16,3 +16,16 @@
 </script>
 {% endblock %}
 
+<!-- MACROS -->
+{% macro input(name, value='', type='text', size=20) -%}
+    <input type="{{ type }}" name="{{ name }}" value="{{
+        value|e }}" size="{{ size }}">
+{%- endmacro %}
+
+{% macro title_txt(text) -%}
+{{ text.upper().replace('_', ' ') }}
+{%- endmacro %}
+
+{% macro nav_link(url, label) -%}
+<a class="{{colour.nav_text}} breadcrumb" href="{{ url }}">{{ title_txt(label) }}</a>
+{%- endmacro %}

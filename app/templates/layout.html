@@ -2,60 +2,56 @@
 
 {% block title %}20 Questions{% endblock %}
 
-{% macro nav_link(url, label) -%}
-<a class="{{colour.nav_text}}" href="{{ url }}">{{ label.upper() }}</a>
-{%- endmacro %}
-
 {% block navbar %}
-<nav class="{{colour.nav}} {{colour.nav_text}} nav-extended">
-  <div class="nav-wrapper">
-    <a href="#" class="{{colour.primary_text}} brand-logo">20 Questions</a>
-    <a href="#" data-activates="mobile-nav" class="button-collapse"><i class="material-icons">menu</i></a>
-    <ul id="nav-mobile" class="right hide-on-med-and-down">
-      {% for nav in navs %}
-      <li>{{ nav_link(url_for(nav), nav.upper()) }}</li>
-      {% endfor %}
-    </ul>
-    <ul class="{{colour.nav}} side-nav" id="mobile-nav">
-      {% for nav in navs %}
-      <li class="tab">{{ nav_link(url_for(nav), nav.upper()) }}</li>
-      {% endfor %}
-    </ul>
-  </div>
-</nav>
+  <nav class="{{colour.nav}} {{colour.nav_text}} nav-extended">
+    <div class="nav-wrapper">
+      <a href="#" class="{{colour.primary_text}} brand-logo">20 Questions</a>
+      <a href="#" data-activates="mobile-nav" class="button-collapse"><i class="material-icons">menu</i></a>
+      <ul id="nav-mobile" class="right hide-on-med-and-down">
+        {% for nav in navs %}
+          <li>{{ nav_link(url_for(nav), nav) }}</li>
+        {% endfor %}
+      </ul>
+      <ul class="{{colour.nav}} side-nav" id="mobile-nav">
+        {% for nav in navs %}
+          <li class="tab">{{ nav_link(url_for(nav), nav) }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </nav>
 {% endblock %}
 
 {% block content %}
-<div class="container">
-  <div>
-    {% for msg in get_flashed_messages() %}
+  <div class="container">
+    <div>
+      {% for msg in get_flashed_messages() %}
+        <div class="card">
+          <div class="container">
+            {{msg}}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
     <div class="card">
       <div class="container">
-        {{msg}}
+        {% block main %}
+          Loading...
+        {% endblock %}
       </div>
     </div>
-    {% endfor %}
   </div>
-  <div class="card">
-    <div class="container">
-      {% block main %}
-      Loading...
-      {% endblock %}
-    </div>
-  </div>
-</div>
 {% endblock %}
 
 {% block footer %}
-<footer class="footer-copyright {{colour.primary}} {{colour.primary_text}}" style="width:100%; position: absolute; bottom: 0; padding-top:2px;">
-  <div class="container">
-    <div class="center">
-      Joshua Pratt and Deepanjan Chakrabarty &copy; 2017
-    </div>
-    <div class="center" style="padding:5px">
-      <iframe src="https://ghbtns.com/github-btn.html?user=Cypher1&repo=20Qs&type=watch&count=true&size=large" frameborder="0" scrolling="0" width="170px" height="30px"></iframe>
+  <footer class="footer-copyright {{colour.primary}} {{colour.primary_text}}" style="width:100%; position: absolute; bottom: 0; padding-top:2px;">
+    <div class="container">
+      <div class="center">
+        Joshua Pratt and Deepanjan Chakrabarty &copy; 2017
+      </div>
+      <div class="center" style="padding:5px">
+        <iframe src="https://ghbtns.com/github-btn.html?user=Cypher1&repo=20Qs&type=watch&count=true&size=large" frameborder="0" scrolling="0" width="170px" height="30px"></iframe>
+      </div>
     </div>
   </div>
-</div>
 </footer>
 {% endblock %}
