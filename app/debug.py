@@ -18,4 +18,9 @@ def get_watches():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000, extra_files=get_watches(), debug=True)
+    app.run(
+        host='0.0.0.0',
+        port=8000,
+        extra_files=get_watches(),
+        debug=True
+    )

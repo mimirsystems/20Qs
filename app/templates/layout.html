@@ -23,6 +23,11 @@
 
 {% block content %}
 <div class="container">
+  <div>
+    {% for msg in get_flashed_messages() %}
+      <div class="card">{{msg}}</div>
+    {% endfor %}
+  </div>
   <div class="card">
     <div class="container">
       {% block main %}

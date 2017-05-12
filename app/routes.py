@@ -2,6 +2,7 @@
     Defines routes
 """
 from flask import render_template, session
+#, flash, Markup
 from server import app, cache, DEFAULT_TIMEOUT
 
 @app.route('/')
@@ -14,12 +15,12 @@ def home():
 def about():
     return render_template('about.html')
 
-@app.route('/set/<key>/<value>')
+@app.route('/set/<key>/<value>', methods=['GET'])
 def set_var(key, value):
     session[key] = value
     return 'ok'
 
-@app.route('/get/<key>')
+@app.route('/get/<key>', methods=['POST'])
 @cache.cached(timeout=10, key_prefix='session_vars')
 def get_var(key):
     return session.get(key, 'not set')
