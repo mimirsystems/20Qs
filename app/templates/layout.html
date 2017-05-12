@@ -2,6 +2,10 @@
 
 {% block title %}20 Questions{% endblock %}
 
+{% macro nav_link(url, label) -%}
+<a class="{{colour.nav_text}}" href="{{ url }}">{{ label.upper() }}</a>
+{%- endmacro %}
+
 {% block navbar %}
 <nav class="{{colour.nav}} {{colour.nav_text}} nav-extended">
   <div class="nav-wrapper">
@@ -9,12 +13,12 @@
     <a href="#" data-activates="mobile-nav" class="button-collapse"><i class="material-icons">menu</i></a>
     <ul id="nav-mobile" class="right hide-on-med-and-down">
       {% for nav in navs %}
-      <li><a class="{{colour.nav_text}}" href="{{ url_for(nav) }}">{{ nav.upper() }}</a></li>
+      <li>{{ nav_link(url_for(nav), nav.upper()) }}</li>
       {% endfor %}
     </ul>
     <ul class="{{colour.nav}} side-nav" id="mobile-nav">
       {% for nav in navs %}
-      <li class="tab"><a class="{{colour.nav_text}}" href="{{ url_for(nav) }}">{{ nav.upper() }}</a></li>
+      <li class="tab">{{ nav_link(url_for(nav), nav.upper()) }}</li>
       {% endfor %}
     </ul>
   </div>
@@ -25,7 +29,11 @@
 <div class="container">
   <div>
     {% for msg in get_flashed_messages() %}
-      <div class="card">{{msg}}</div>
+    <div class="card">
+      <div class="container">
+        {{msg}}
+      </div>
+    </div>
     {% endfor %}
   </div>
   <div class="card">
