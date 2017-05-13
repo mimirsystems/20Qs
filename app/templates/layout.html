@@ -42,13 +42,37 @@
   </div>
 {% endblock %}
 
+{% block styles %}
+  {{ super() }}
+  <style>
+    body {
+      display: flex;
+      min-height: 100vh;
+      flex-direction: column;
+    }
+    body, div{
+      flex: 1 0 auto;
+    }
+    .filled-container {
+      padding: 0 !important;
+    }
+    .filled {
+      padding-top: 10px;
+      padding-bottom: 10px;
+      padding-left: 10px;
+      padding-right: 0;
+      white-space: nowrap;
+    }
+  </style>
+{% endblock %}
+
 {% block footer %}
-  <footer class="footer-copyright {{colour.primary}} {{colour.primary_text}}" style="width:100%; position: absolute; bottom: 0; padding-top:2px;">
+  <footer class="footer-copyright {{colour.primary}} {{colour.primary_text}}">
     <div class="container">
       <div class="center">
         Joshua Pratt and Deepanjan Chakrabarty &copy; 2017
       </div>
-      <div class="center" style="padding:5px">
+      <div class="center">
         <iframe src="https://ghbtns.com/github-btn.html?user=Cypher1&repo=20Qs&type=watch&count=true&size=large" frameborder="0" scrolling="0" width="170px" height="30px"></iframe>
       </div>
     </div>

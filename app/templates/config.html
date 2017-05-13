@@ -29,3 +29,11 @@
 {% macro nav_link(url, label) -%}
 <a class="{{colour.nav_text}} breadcrumb" href="{{ url }}">{{ title_txt(label) }}</a>
 {%- endmacro %}
+
+{% macro to_percent(real) -%}
+{% if real < 0 %}0%
+{% elif real > 1 %}100%
+{% else %}
+  {{ real*100 }}%
+{% endif %}
+{%- endmacro %}

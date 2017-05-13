@@ -16,9 +16,8 @@ def get_watches():
 WATCH = ['templates', 'static']
 
 app.config['SECRET_KEY'] = 'loljk'
-app.config['HOST'] = '0.0.0.0'
 app.config['PORT'] = 8000
 app.config['DEBUG'] = True
 
 if __name__ == '__main__':
-    app.run(extra_files=get_watches())
+    app.run(host='0.0.0.0', extra_files=get_watches())
