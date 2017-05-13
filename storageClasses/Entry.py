@@ -11,6 +11,8 @@ class Entry(db.Model):
     :field id: Primary key for an entry in the database
     :field answer: Column for answers to question in the entry
     :field question_id: Foreign key from Question class
+    :field question: Defines a relationship such that details of entries associated with a question can be retrieved
+    the database
     """
     id = db.Column(db.Integer, primary_key=True)
     answer = db.Column(db.String(3))
