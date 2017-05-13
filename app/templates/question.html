@@ -3,7 +3,7 @@
   <h2 class="center">{{question}}</h2>
   <div class="collection">
     {% for op in options %}
-      <a href="{{ url_for('answer', question=question, answer=op)}}" class="waves-effect waves-light collection-item">
+      <a href="{{ url_for('answer', question=question, answer=op)}}" class="waves-effect collection-item">
         <i class="material-icons right">play_arrow</i>{{op}}
       </a>
     {% endfor %}

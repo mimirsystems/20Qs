@@ -1,24 +1,9 @@
 {% extends "config.html" %}
+{% from "macros.html" import input, title_txt, nav_link, to_percent with context %}
+{% include "navbar.html" %}
 
-{% block title %}20 Questions{% endblock %}
-
-{% block navbar %}
-  <nav class="{{colour.nav}} {{colour.nav_text}} nav-extended">
-    <div class="nav-wrapper">
-      <a href="#" class="{{colour.primary_text}} brand-logo">20 Questions</a>
-      <a href="#" data-activates="mobile-nav" class="button-collapse"><i class="material-icons">menu</i></a>
-      <ul id="nav-mobile" class="right hide-on-med-and-down">
-        {% for nav in navs %}
-          <li>{{ nav_link(url_for(nav), nav) }}</li>
-        {% endfor %}
-      </ul>
-      <ul class="{{colour.nav}} side-nav" id="mobile-nav">
-        {% for nav in navs %}
-          <li class="tab">{{ nav_link(url_for(nav), nav) }}</li>
-        {% endfor %}
-      </ul>
-    </div>
-  </nav>
+{% block title %}
+20 Questions
 {% endblock %}
 
 {% block content %}
@@ -40,42 +25,5 @@
       </div>
     </div>
   </div>
-{% endblock %}
-
-{% block styles %}
-  {{ super() }}
-  <style>
-    body {
-      display: flex;
-      min-height: 100vh;
-      flex-direction: column;
-    }
-    body, div{
-      flex: 1 0 auto;
-    }
-    .filled-container {
-      padding: 0 !important;
-    }
-    .filled {
-      padding-top: 10px;
-      padding-bottom: 10px;
-      padding-left: 10px;
-      padding-right: 0;
-      white-space: nowrap;
-    }
-  </style>
-{% endblock %}
-
-{% block footer %}
-  <footer class="footer-copyright {{colour.primary}} {{colour.primary_text}}">
-    <div class="container">
-      <div class="center">
-        Joshua Pratt and Deepanjan Chakrabarty &copy; 2017
-      </div>
-      <div class="center">
-        <iframe src="https://ghbtns.com/github-btn.html?user=Cypher1&repo=20Qs&type=watch&count=true&size=large" frameborder="0" scrolling="0" width="170px" height="30px"></iframe>
-      </div>
-    </div>
-  </div>
-</footer>
+{% include "footer.html" %}
 {% endblock %}

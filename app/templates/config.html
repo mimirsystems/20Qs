@@ -16,24 +16,26 @@
 </script>
 {% endblock %}
 
-<!-- MACROS -->
-{% macro input(name, value='', type='text', size=20) -%}
-    <input type="{{ type }}" name="{{ name }}" value="{{
-        value|e }}" size="{{ size }}">
-{%- endmacro %}
-
-{% macro title_txt(text) -%}
-{{ text.upper().replace('_', ' ') }}
-{%- endmacro %}
-
-{% macro nav_link(url, label) -%}
-<a class="{{colour.nav_text}} breadcrumb" href="{{ url }}">{{ title_txt(label) }}</a>
-{%- endmacro %}
-
-{% macro to_percent(real) -%}
-{% if real < 0 %}0%
-{% elif real > 1 %}100%
-{% else %}
-  {{ real*100 }}%
-{% endif %}
-{%- endmacro %}
+{% block styles %}
+  {{ super() }}
+  <style>
+    body {
+      display: flex;
+      min-height: 100vh;
+      flex-direction: column;
+    }
+    body, div{
+      flex: 1 0 auto;
+    }
+    .filled-container {
+      padding: 0 !important;
+    }
+    .filled {
+      padding-top: 10px;
+      padding-bottom: 10px;
+      padding-left: 10px;
+      padding-right: 0;
+      white-space: nowrap;
+    }
+  </style>
+{% endblock %}
