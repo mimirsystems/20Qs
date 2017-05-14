@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+{% block main %}
+  <h2 class="center">{{question}}</h2>
+  <div class="collection">
+    {% for op in options %}
+      <a href="{{ url_for('answer', question=question, answer=op)}}" class="waves-effect collection-item">
+        <i class="material-icons right">play_arrow</i>{{op}}
+      </a>
+    {% endfor %}
+  </div>
+  <div class="container">
+    <ul class="collapsible" data-collapsible="accordion">
+      <li>
+        <div class="collapsible-header">
+          <i class="material-icons">help_outline</i>Guesses
+        </div>
+        <div class="collapsible-body collection">
+            {% for (guess, prob) in guesses %}
+              <div class="collection-item filled-container">
+                <div class="filled green" style="width: {{to_percent(prob)}}">
+                  {{guess}}: {{to_percent(prob)}}
+                </div>
+              </div>
+            {% endfor %}
+        </div>
+      </li>
+    </ul>
+  </div>
+{% endblock %}

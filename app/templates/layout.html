@@ -1,53 +1,29 @@
 {% extends "config.html" %}
+{% from "macros.html" import input, title_txt, nav_link, to_percent with context %}
+{% include "navbar.html" %}
 
-{% block title %}20 Questions{% endblock %}
-
-{% block navbar %}
-<nav class="{{colour.nav}} {{colour.nav_text}} nav-extended">
-  <div class="nav-wrapper">
-    <a href="#" class="{{colour.primary_text}} brand-logo">20 Questions</a>
-    <a href="#" data-activates="mobile-nav" class="button-collapse"><i class="material-icons">menu</i></a>
-    <ul id="nav-mobile" class="right hide-on-med-and-down">
-      {% for nav in navs %}
-      <li><a class="{{colour.nav_text}}" href="{{ url_for(nav) }}">{{ nav.upper() }}</a></li>
-      {% endfor %}
-    </ul>
-    <ul class="{{colour.nav}} side-nav" id="mobile-nav">
-      {% for nav in navs %}
-      <li class="tab"><a class="{{colour.nav_text}}" href="{{ url_for(nav) }}">{{ nav.upper() }}</a></li>
-      {% endfor %}
-    </ul>
-  </div>
-</nav>
+{% block title %}
+20 Questions
 {% endblock %}
 
 {% block content %}
-<div class="container">
-  <div>
-    {% for msg in get_flashed_messages() %}
-      <div class="card">{{msg}}</div>
-    {% endfor %}
-  </div>
-  <div class="card">
-    <div class="container">
-      {% block main %}
-      Loading...
-      {% endblock %}
-    </div>
-  </div>
-</div>
-{% endblock %}
-
-{% block footer %}
-<footer class="footer-copyright {{colour.primary}} {{colour.primary_text}}" style="width:100%; position: absolute; bottom: 0; padding-top:2px;">
   <div class="container">
-    <div class="center">
-      Joshua Pratt and Deepanjan Chakrabarty &copy; 2017
+    <div>
+      {% for msg in get_flashed_messages() %}
+        <div class="card">
+          <div class="container">
+            {{msg}}
+          </div>
+        </div>
+      {% endfor %}
     </div>
-    <div class="center" style="padding:5px">
-      <iframe src="https://ghbtns.com/github-btn.html?user=Cypher1&repo=20Qs&type=watch&count=true&size=large" frameborder="0" scrolling="0" width="170px" height="30px"></iframe>
+    <div class="card">
+      <div class="container">
+        {% block main %}
+          Loading...
+        {% endblock %}
+      </div>
     </div>
   </div>
-</div>
-</footer>
+{% include "footer.html" %}
 {% endblock %}

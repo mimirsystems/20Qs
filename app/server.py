@@ -22,7 +22,7 @@ cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 DEFAULT_TIMEOUT = 60
 
 # Routing
-NAV_ROUTES = ["home", "about"] #, "new"]
+NAV_ROUTES = ["new_game", "about"]
 
 # Colours
 COLOURS = {

@@ -16,3 +16,26 @@
 </script>
 {% endblock %}
 
+{% block styles %}
+  {{ super() }}
+  <style>
+    body {
+      display: flex;
+      min-height: 100vh;
+      flex-direction: column;
+    }
+    body, div{
+      flex: 1 0 auto;
+    }
+    .filled-container {
+      padding: 0 !important;
+    }
+    .filled {
+      padding-top: 10px;
+      padding-bottom: 10px;
+      padding-left: 10px;
+      padding-right: 0;
+      white-space: nowrap;
+    }
+  </style>
+{% endblock %}

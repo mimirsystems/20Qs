@@ -1,0 +1,18 @@
+{% block navbar %}
+  <nav class="{{colour.nav}} {{colour.nav_text}} nav-extended">
+    <div class="nav-wrapper">
+      <a href="#" class="{{colour.primary_text}} brand-logo">20 Questions</a>
+      <a href="#" data-activates="mobile-nav" class="button-collapse"><i class="material-icons">menu</i></a>
+      <ul id="nav-mobile" class="right hide-on-med-and-down">
+        {% for nav in navs %}
+          <li>{{ nav_link(url_for(nav), nav) }}</li>
+        {% endfor %}
+      </ul>
+      <ul class="{{colour.nav}} side-nav" id="mobile-nav">
+        {% for nav in navs %}
+          <li class="tab">{{ nav_link(url_for(nav), nav) }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </nav>
+{% endblock %}

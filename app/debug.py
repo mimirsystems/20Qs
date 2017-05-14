@@ -1,13 +1,9 @@
 """
-    Runs the server in debug mode
+Runs the server in debug mode
 """
 
 from os import path, walk
 from routes import app
-
-# Config
-app.config['SECRET_KEY'] = 'loljk'
-WATCH = ['templates', 'static']
 
 def get_watches():
     watch_files = []
@@ -16,11 +12,12 @@ def get_watches():
             watch_files += [path.join(dirname, file) for file in files]
     return watch_files
 
+# Config
+WATCH = ['templates', 'static']
+
+app.config['SECRET_KEY'] = 'loljk'
+app.config['PORT'] = 8000
+app.config['DEBUG'] = True
 
 if __name__ == '__main__':
-    app.run(
-        host='0.0.0.0',
-        port=8000,
-        extra_files=get_watches(),
-        debug=True
-    )
+    app.run(host='0.0.0.0', extra_files=get_watches())
