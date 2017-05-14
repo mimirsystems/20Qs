@@ -1,5 +1,8 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+import datetime
+import time
+
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URL'] = 'splite:////tmp/test.db'
@@ -16,6 +19,7 @@ class Entry(db.Model):
     """
     id = db.Column(db.Integer, primary_key=True)
     answer = db.Column(db.String(3))
+    time_created = db.Column(db.TIMESTAMP, server_default=db.func.now())
     question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
     question = db.relationship('Question', backref=db.backref('entries', lazy='dynamic'))
     
@@ -28,6 +32,7 @@ class Entry(db.Model):
         self.question = question
         question.incrementCount()
         self.answer = answer
+        self.time_created = datetime.datetime.now()
 
 
     def __repr__(self):
@@ -61,3 +66,4 @@ class Question(db.Model):
 
     def __repr__(self):
         return self.question + " \nAsked: " + str(self.count) + " times"
+
