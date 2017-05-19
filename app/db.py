@@ -36,6 +36,7 @@ class Entry(db.Model):
         :param animal: An instance of the class Animal
         """
         self.animal = animal
+        animal.increment_count()
 
     def __repr__(self):
         return "Question: " + self.question.question + " \nAnswer: " + self.answer
@@ -105,6 +106,12 @@ class Animal(db.Model):
         "return: The name of the animal
         """
         return self.name
+    
+    def increment_count(self):
+        """
+        This method increments the count for the number of times this animal was chosen by a user
+        """
+        self.count += 1
 
     def __repr__(self):
         return self.name + " was a user's guess " + self.count + " times"
