@@ -18,7 +18,7 @@ app = Flask(__name__)
 
 # Base config
 DEFAULT_TIMEOUT = 60
-app.config['SQLALCHEMY_DATABASE_URL'] = 'splite:////tmp/test.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Extensions
@@ -26,7 +26,6 @@ Material(app)
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 # Database
 db = SQLAlchemy(app)
-db.create_all()
 
 # Routing
 NAV_ROUTES = ["new_game", "about"]

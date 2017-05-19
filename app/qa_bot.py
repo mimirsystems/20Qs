@@ -15,12 +15,15 @@ class QaBot(object):
     def get_question(self):
         questions_asked = []
 
-        new_questions = Question.query.filter(~Question.id.any(questions_asked))
+        new_questions = Question.query.filter(~Question.id.in_(questions_asked))
 
         # filter / order and limit to get maximal split
         question_query = new_questions.all()
 
-        question = question_query.first()
+        if question_query == []:
+            return ("Sorry, I don't know this one", [])
+
+        question = question_query[0]
         options = ['Yes', 'No', 'Unsure']
 
         # print('Q: {}'.format(question))
