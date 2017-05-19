@@ -1,7 +1,7 @@
 """
     defines a 20Qs bot
 """
-from db import Entry, Question
+from app.db import Entry, Question
 
 class QaBot(object):
     """

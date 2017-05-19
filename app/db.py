@@ -1,5 +1,5 @@
 import datetime
-from server import db
+from app.server import db
 
 class Entry(db.Model):
     """

@@ -1,0 +1,8 @@
+{
+  "name": "20Qs",
+  "description": "Playing 20Questions with Online Tree Learning and Uncertainty",
+  "image": "heroku/python",
+  "repository": "https://github.com/Cypher1/20Qs",
+  "keywords": ["python", "flask" ],
+  "addons": [ "heroku-postgresql" ]
+}

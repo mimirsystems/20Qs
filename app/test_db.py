@@ -3,7 +3,7 @@ Test the db and query functions
 """
 
 from db import Entry, Question
-from server import db
+from app.server import db
 
 def main():
     db.create_all()
