@@ -1,6 +1,7 @@
 """
     defines a 20Qs bot
 """
+from db import Entry, Question
 
 class QaBot(object):
     """
@@ -12,13 +13,19 @@ class QaBot(object):
         self.settings = settings
 
     def get_question(self):
-        question = 'What is your favourite colour?'
-        options = ['Blue', 'Green', 'Red']
+        questions_asked = []
 
-        options.append('I don\'t know')
-        print('Q: {}'.format(question))
-        print('A: {}'.format(options))
-        return (question, options)
+        new_questions = Question.query.filter(~Question.id.any(questions_asked))
+
+        # filter / order and limit to get maximal split
+        question_query = new_questions.all()
+
+        question = question_query.first()
+        options = ['Yes', 'No', 'Unsure']
+
+        # print('Q: {}'.format(question))
+        # print('A: {}'.format(options))
+        return (question.question, options)
 
     def give_answer(self, question, answer):
         print('Q: {}'.format(question))
