@@ -11,10 +11,12 @@ class Entry(db.Model):
         entries associated with a question can be retrieved from the database
     """
     id = db.Column(db.Integer, primary_key=True)
-    answer = db.Column(db.String(3))
+    answer = db.Column(db.String(30))
     time_created = db.Column(db.TIMESTAMP, server_default=db.func.now())
     question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
+    animal_id = db.Column(db.Integer, db.ForeignKey('animal_id'))
     question = db.relationship('Question', backref=db.backref('entries', lazy='dynamic'))
+    animal = db.relationship('Animal', backref=db.backref('entries', lazy='dynamic'))
 
     def __init__(self, question, answer):
         """
@@ -28,6 +30,13 @@ class Entry(db.Model):
         self.time_created = datetime.datetime.now()
 
 
+    def set_answer(self, animal):
+        """
+        This method updates the answer column for the entry
+        :param animal: An instance of the class Animal
+        """
+        self.animal = animal
+
     def __repr__(self):
         return "Question: " + self.question.question + " \nAnswer: " + self.answer
 
@@ -40,13 +49,13 @@ class Question(db.Model):
     :field count: Column that stores the number of times this question was asked
     """
     id = db.Column(db.Integer, primary_key=True)
-    question = db.Column(db.String(100))
-    count = db.Column(db.Integer, autoincrement=True)
+    question = db.Column(db.String(200))
+    count = db.Column(db.Integer)
 
     def __init__(self, question):
         """
         Constructor
-        :param question" String representation of the question asked
+        :param question: String representation of the question asked
         """
         self.question = question
         self.count = 0
@@ -57,9 +66,45 @@ class Question(db.Model):
         """
         self.count += 1
 
+    def get_question_string(self):
+        """
+        This method returns the string representation of a question
+        :return: String representation of the question
+        """
+        return self.question
+
     def get_responses(self):
         query = Entry.query.filter_by(question_id=self.id)
         return query
 
     def __repr__(self):
         return self.question + " \nAsked: " + str(self.count) + " times"
+
+
+class Animal(db.Model):
+    """
+    This class stores information of a question that was asked and the number of times it was asked
+    :field id: Primary key for the class in the database
+    :field name: String representation of the animal's name
+    :field count: Column that stores the number of times this animal was chosen by a user
+    """
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200))
+    count = db.Column(db.Integer)
+
+    def __init__(self, name):
+        """
+        Constructor
+        :param name: String representation of the name of the animal
+        """
+        self.name = name
+        self.count = 0
+
+    def get_name(self):
+        """
+        "return: The name of the animal
+        """
+        return self.name
+
+    def __repr__(self):
+        return self.name + " was a user's guess " + self.count + " times"
