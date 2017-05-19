@@ -1,12 +1,5 @@
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 import datetime
-import time
-
-
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URL'] = 'splite:////tmp/test.db'
-db = SQLAlchemy(app)
+from server import db
 
 class Entry(db.Model):
     """
@@ -14,15 +7,15 @@ class Entry(db.Model):
     :field id: Primary key for an entry in the database
     :field answer: Column for answers to question in the entry
     :field question_id: Foreign key from Question class
-    :field question: Defines a relationship such that details of entries associated with a question can be retrieved
-    the database
+    :field question: Defines a relationship such that details of
+        entries associated with a question can be retrieved from the database
     """
     id = db.Column(db.Integer, primary_key=True)
     answer = db.Column(db.String(3))
     time_created = db.Column(db.TIMESTAMP, server_default=db.func.now())
     question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
     question = db.relationship('Question', backref=db.backref('entries', lazy='dynamic'))
-    
+
     def __init__(self, question, answer):
         """
         Constructor for Entry
@@ -30,7 +23,7 @@ class Entry(db.Model):
         :param answer: String representation of the answer provided for the question
         """
         self.question = question
-        question.incrementCount()
+        question.increment_count()
         self.answer = answer
         self.time_created = datetime.datetime.now()
 
@@ -38,7 +31,7 @@ class Entry(db.Model):
     def __repr__(self):
         return "Question: " + self.question.question + " \nAnswer: " + self.answer
 
-   
+
 class Question(db.Model):
     """
     This class stores information of a question that was asked and the number of times it was asked
@@ -57,13 +50,16 @@ class Question(db.Model):
         """
         self.question = question
         self.count = 0
-    
-    def incrementCount(self):
+
+    def increment_count(self):
         """
         This method increments the count that stores the number of times the question was asked
         """
         self.count += 1
 
+    def get_responses(self):
+        query = Entry.query.filter_by(question_id=self.id)
+        return query
+
     def __repr__(self):
         return self.question + " \nAsked: " + str(self.count) + " times"
-
