@@ -1,6 +1,7 @@
 """
 Sets up the server core
 """
+import os
 from flask import Flask
 from flask_cache import Cache
 from flask_material import Material
@@ -18,7 +19,7 @@ app = Flask(__name__)
 
 # Base config
 DEFAULT_TIMEOUT = 60
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Extensions
