@@ -18,7 +18,7 @@ class Entry(db.Model):
     the database
     """
     id = db.Column(db.Integer, primary_key=True)
-    answer = db.Column(db.String(3))
+    answer = db.Column(db.String(30))
     time_created = db.Column(db.TIMESTAMP, server_default=db.func.now())
     question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
     question = db.relationship('Question', backref=db.backref('entries', lazy='dynamic'))
@@ -47,7 +47,7 @@ class Question(db.Model):
     :field count: Column that stores the number of times this question was asked
     """
     id = db.Column(db.Integer, primary_key=True)
-    question = db.Column(db.String(100))
+    question = db.Column(db.String(200))
     count = db.Column(db.Integer, autoincrement=True)
 
     def __init__(self, question):
@@ -66,4 +66,10 @@ class Question(db.Model):
 
     def __repr__(self):
         return self.question + " \nAsked: " + str(self.count) + " times"
+
+
+
+
+
+
 
