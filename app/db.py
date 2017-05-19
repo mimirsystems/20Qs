@@ -10,11 +10,13 @@ class Entry(db.Model):
     :field question: Defines a relationship such that details of
         entries associated with a question can be retrieved from the database
     """
+    __tablename__ = 'entries'
     id = db.Column(db.Integer, primary_key=True)
     answer = db.Column(db.String(30))
     time_created = db.Column(db.TIMESTAMP, server_default=db.func.now())
-    question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
-    animal_id = db.Column(db.Integer, db.ForeignKey('animal.id'))
+    question_id = db.Column(db.Integer, db.ForeignKey('questions.id'))
+    animal_id = db.Column(db.Integer, db.ForeignKey('animals.id'))
+
     question = db.relationship('Question', backref=db.backref('entries', lazy='dynamic'))
     animal = db.relationship('Animal', backref=db.backref('entries', lazy='dynamic'))
 
@@ -49,6 +51,7 @@ class Question(db.Model):
     :field question: String representation of the question
     :field count: Column that stores the number of times this question was asked
     """
+    __tablename__ = 'questions'
     id = db.Column(db.Integer, primary_key=True)
     question = db.Column(db.String(200))
     count = db.Column(db.Integer)
@@ -89,6 +92,7 @@ class Animal(db.Model):
     :field name: String representation of the animal's name
     :field count: Column that stores the number of times this animal was chosen by a user
     """
+    __tablename__ = 'animals'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200))
     count = db.Column(db.Integer)
