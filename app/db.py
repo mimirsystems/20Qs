@@ -14,7 +14,7 @@ class Entry(db.Model):
     answer = db.Column(db.String(30))
     time_created = db.Column(db.TIMESTAMP, server_default=db.func.now())
     question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
-    animal_id = db.Column(db.Integer, db.ForeignKey('animal_id'))
+    animal_id = db.Column(db.Integer, db.ForeignKey('animal.id'))
     question = db.relationship('Question', backref=db.backref('entries', lazy='dynamic'))
     animal = db.relationship('Animal', backref=db.backref('entries', lazy='dynamic'))
 
