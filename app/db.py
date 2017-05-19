@@ -1,12 +1,5 @@
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 import datetime
-import time
-
-
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URL'] = 'splite:////tmp/test.db'
-db = SQLAlchemy(app)
+from app.server import db
 
 class Entry(db.Model):
     """
@@ -14,8 +7,8 @@ class Entry(db.Model):
     :field id: Primary key for an entry in the database
     :field answer: Column for answers to question in the entry
     :field question_id: Foreign key from Question class
-    :field question: Defines a relationship such that details of entries associated with a question can be retrieved
-    the database
+    :field question: Defines a relationship such that details of
+        entries associated with a question can be retrieved from the database
     """
     id = db.Column(db.Integer, primary_key=True)
     answer = db.Column(db.String(30))
@@ -24,7 +17,7 @@ class Entry(db.Model):
     animal_id = db.Column(db.Integer, db.ForeignKey('animal_id'))
     question = db.relationship('Question', backref=db.backref('entries', lazy='dynamic'))
     animal = db.relationship('Animal', backref=db.backref('entries', lazy='dynamic'))
-    
+
     def __init__(self, question, answer):
         """
         Constructor for Entry
@@ -32,11 +25,11 @@ class Entry(db.Model):
         :param answer: String representation of the answer provided for the question
         """
         self.question = question
-        question.incrementCount()
+        question.increment_count()
         self.answer = answer
         self.time_created = datetime.datetime.now()
 
-    
+
     def set_answer(self, animal):
         """
         This method updates the answer column for the entry
@@ -48,7 +41,7 @@ class Entry(db.Model):
     def __repr__(self):
         return "Question: " + self.question.question + " \nAnswer: " + self.answer
 
-   
+
 class Question(db.Model):
     """
     This class stores information of a question that was asked and the number of times it was asked
@@ -67,29 +60,33 @@ class Question(db.Model):
         """
         self.question = question
         self.count = 0
-    
+
     def increment_count(self):
         """
         This method increments the count that stores the number of times the question was asked
         """
         self.count += 1
-    
+
     def get_question_string(self):
         """
         This method returns the string representation of a question
         :return: String representation of the question
         """
-        return question
+        return self.question
+
+    def get_responses(self):
+        query = Entry.query.filter_by(question_id=self.id)
+        return query
 
     def __repr__(self):
         return self.question + " \nAsked: " + str(self.count) + " times"
 
-class Animal:
 
+class Animal(db.Model):
     """
     This class stores information of a question that was asked and the number of times it was asked
     :field id: Primary key for the class in the database
-    :field question: String representation of the animal's name
+    :field name: String representation of the animal's name
     :field count: Column that stores the number of times this animal was chosen by a user
     """
     id = db.Column(db.Integer, primary_key=True)
@@ -106,16 +103,15 @@ class Animal:
 
     def get_name(self):
         """
-        "return: The name of the animal 
+        "return: The name of the animal
         """
         return self.name
     
     def increment_count(self):
+        """
+        This method increments the count for the number of times this animal was chosen by a user
+        """
         self.count += 1
 
     def __repr__(self):
         return self.name + " was a user's guess " + self.count + " times"
-
-
-
-

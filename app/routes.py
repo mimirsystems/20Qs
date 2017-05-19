@@ -3,9 +3,9 @@
 """
 from flask import render_template, session, request, url_for, redirect
 #, flash, Markup
-from server import app, cache, DEFAULT_TIMEOUT
+from app.server import app, cache, DEFAULT_TIMEOUT
 
-from qa_bot import QaBot
+from app.qa_bot import QaBot
 
 @app.route('/')
 @cache.cached(timeout=DEFAULT_TIMEOUT)

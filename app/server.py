@@ -4,6 +4,7 @@ Sets up the server core
 from flask import Flask
 from flask_cache import Cache
 from flask_material import Material
+from flask_sqlalchemy import SQLAlchemy
 
 # Forms
 # from flask_wtf import Form
@@ -15,11 +16,16 @@ from flask_material import Material
 
 app = Flask(__name__)
 
+# Base config
+DEFAULT_TIMEOUT = 60
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 # Extensions
 Material(app)
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
-
-DEFAULT_TIMEOUT = 60
+# Database
+db = SQLAlchemy(app)
 
 # Routing
 NAV_ROUTES = ["new_game", "about"]
