@@ -1,3 +1,6 @@
+"""
+    Set up tables and query functions
+"""
 import datetime
 from app.server import db
 
