@@ -15,7 +15,7 @@ class QaBot(object):
     def get_question(self):
         questions_asked = []
 
-        new_questions = Question.query.filter(~Question.id.in_(questions_asked))
+        new_questions = Question.query # .filter(~Question.id.in_(questions_asked))
 
         # filter / order and limit to get maximal split
         question_query = new_questions.all()
