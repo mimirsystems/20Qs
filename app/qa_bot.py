@@ -14,11 +14,14 @@ class QaBot(object):
 
     def get_question(self):
         questions_asked = []
+        question_query = []
+        try:
+            new_questions = Question.query # .filter(~Question.id.in_(questions_asked))
 
-        new_questions = Question.query # .filter(~Question.id.in_(questions_asked))
-
-        # filter / order and limit to get maximal split
-        question_query = new_questions.all()
+            # filter / order and limit to get maximal split
+            question_query = new_questions.all()
+        except Exception as error:
+            print(error)
 
         if question_query == []:
             return ("Sorry, I don't know this one", [])

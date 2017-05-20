@@ -2,7 +2,7 @@
 Test the db and query functions
 """
 
-from db import Entry, Question
+from app.db import Entry, Question
 from app.server import db
 
 def main():
