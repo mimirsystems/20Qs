@@ -19,7 +19,7 @@ app = Flask(__name__)
 
 # Base config
 DEFAULT_TIMEOUT = 60
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:////tmp/20qs.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Extensions

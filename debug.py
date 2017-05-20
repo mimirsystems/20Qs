@@ -3,8 +3,8 @@ Runs the server in debug mode
 """
 
 from os import path, walk
-from routes import app
-from db import db
+from app.routes import app
+from app.db import db
 
 def get_watches():
     watch_files = []
@@ -15,7 +15,6 @@ def get_watches():
 
 # Config
 WATCH = ['templates', 'static']
-
 app.config['SECRET_KEY'] = 'loljk'
 app.config['PORT'] = 8000
 app.config['DEBUG'] = True
