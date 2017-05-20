@@ -27,6 +27,7 @@ Material(app)
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 # Database
 db = SQLAlchemy(app)
+db.create_all()
 
 # Routing
 NAV_ROUTES = ["new_game", "about"]

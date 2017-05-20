@@ -6,8 +6,6 @@ from app.db import Entry, Question
 from app.server import db
 
 def main():
-    db.create_all()
-
     question1 = Question("Is this a mammal?")
 
     entry1 = Entry(question1, "Yes")
