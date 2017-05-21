@@ -61,5 +61,5 @@ def add_game(solution, answer_dict):
             writer.writerow(row)
 
 
-read_and_write_from_zoo('Zoo.csv')
+read_and_write_from_zoo('ZooRefined.csv')
 
