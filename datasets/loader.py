@@ -4,7 +4,7 @@ Loads a dataset from its base file using a mapper defined for that dataset
 
 import csv
 
-from zoo_features import FEATURES
+from zoo.features import FEATURES
 
 YES_NO_MAP = {
     '0':'No',

@@ -23,7 +23,7 @@ class Entry(db.Model):
     question = db.relationship('Question', backref=db.backref('entries', lazy='dynamic'))
     animal = db.relationship('Animal', backref=db.backref('entries', lazy='dynamic'))
 
-    def __init__(self, question, answer):
+    def __init__(self, question, answer, animal=None):
         """
         Constructor for Entry
         :param question: An instance of class question
@@ -33,6 +33,9 @@ class Entry(db.Model):
         question.increment_count()
         self.answer = answer
         self.time_created = datetime.datetime.now()
+        if animal != None:
+            self.animal = animal
+            animal.increment_count()
 
 
     def set_answer(self, animal):
@@ -58,6 +61,7 @@ class Question(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     question = db.Column(db.String(200))
     count = db.Column(db.Integer)
+    __table_args__ = (db.UniqueConstraint('question'), )
 
     def __init__(self, question):
         """
@@ -99,6 +103,7 @@ class Animal(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200))
     count = db.Column(db.Integer)
+    __table_args__ = (db.UniqueConstraint('name'), )
 
     def __init__(self, name):
         """
@@ -113,7 +118,7 @@ class Animal(db.Model):
         "return: The name of the animal
         """
         return self.name
-    
+
     def increment_count(self):
         """
         This method increments the count for the number of times this animal was chosen by a user
@@ -121,4 +126,4 @@ class Animal(db.Model):
         self.count += 1
 
     def __repr__(self):
-        return self.name + " was a user's guess " + self.count + " times"
+        return "{} was a user's guess {} times".format(self.name, self.count)
