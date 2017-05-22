@@ -6,6 +6,13 @@ import csv
 
 from zoo_features import FEATURES
 
+YES_NO_MAP = {
+    '0':'No',
+    '1':'Yes',
+    False:'No',
+    True:'Yes',
+}
+
 def mapper(row):
     solution = None
     questions = {}
@@ -17,15 +24,10 @@ def mapper(row):
             if '{}' in question: # convert a value question to a yes/no question
                 for answer in answers:
                     fquestion = question.format(answer)
-                    if value == answer:
-                        questions[fquestion] = "Yes"
-                    else:
-                        questions[fquestion] = "No"
+                    questions[fquestion] = YES_NO_MAP[value == answer]
             else: # already a yes / no question
-                if value == '1':
-                    questions[question] = "Yes"
-                elif value == '0':
-                    questions[question] = "No"
+                if value in YES_NO_MAP:
+                    questions[question] = YES_NO_MAP[value]
                 else:
                     raise Exception(
                         "Parse fail: Answer = {} for Question = {}".format(value, question)
@@ -58,14 +60,13 @@ def add_game(solution, answers):
     #with open('ZooQAs.csv', 'a') as csv_out_file:
         #writer = csv.writer(csv_out_file)
 
-    print(solution)
     for question, answer in answers.items():
-        print("\t", question, answer)
+        print("\"{}\", \"{}\", \"{}\"".format(solution, question, answer))
         #row = [question, answer_dict[question], solution]
         #writer.writerow(row)
 
 def load_data():
-    dataset = get_games_from_csv('zoo.data.txt')
+    dataset = get_games_from_csv('zoo.csv')
     for game in dataset:
         add_game(*game)
 
