@@ -4,6 +4,24 @@
 import datetime
 from app.server import db
 
+def add_game(name, questions):
+    """
+    Adds the data from a game to the database
+    """
+    animal = Animal.query.filter(Animal.name == name).first()
+    if animal is None:
+        animal = Animal(name)
+        db.session.add(animal)
+    for question_txt, answer_txt in questions.items():
+        question = Question.query.filter(Question.question == question_txt).first()
+        if question is None:
+            question = Question(question_txt)
+            db.session.add(question)
+        answer = Entry(question, answer_txt, animal)
+        db.session.add(answer)
+    db.session.commit()
+
+
 class Entry(db.Model):
     """
     This class stores information of each entry in the survery form

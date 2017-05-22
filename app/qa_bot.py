@@ -1,7 +1,8 @@
 """
     defines a 20Qs bot
 """
-from app.db import Entry, Question
+from random import choice
+from app.db import Question #, Animal
 
 class QaBot(object):
     """
@@ -26,12 +27,16 @@ class QaBot(object):
         if question_query == []:
             return ("Sorry, I don't know this one", [])
 
-        question = question_query[0]
+        question = choice(question_query)
         options = ['Yes', 'No', 'Unsure']
 
         # print('Q: {}'.format(question))
         # print('A: {}'.format(options))
-        return (question.question, options)
+
+        q_txt = question.question
+        if q_txt[-1] != '?':
+            q_txt += '?'
+        return (q_txt, options)
 
     def give_answer(self, question, answer):
         print('Q: {}'.format(question))
