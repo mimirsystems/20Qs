@@ -1,8 +1,11 @@
 {% extends "layout.html" %}
 {% block main %}
-  <h2>Welcome!</h2>
-  <p class="center">Think of an animal</p>
-  <a class="center" href="{{ url_for('question') }}">
-    Start game
-  </a>
+  <h2 class="center">Welcome!</h2>
+  <p class="center">Think of an animal and the bot will ask you 20 Questions to try to guess it!</p>
+  <p>
+  <p class="center">
+    <a class="btn waves-effect waves-light" href="{{ url_for('question') }}">
+      Play
+    </a>
+  </p>
 {% endblock %}

@@ -4,14 +4,16 @@
 from random import choice
 from app.db import Question #, Animal
 
+NUM_QUESTIONS=20
+
 class QaBot(object):
     """
         Takes a dataset and a set of answered questions
         Makes guesses about good questions to ask
         and possible solutions
     """
-    def __init__(self, settings):
-        self.settings = settings
+    def __init__(self, answered):
+        self.answered = answered
 
     def get_question(self):
         questions_asked = []
@@ -43,6 +45,5 @@ class QaBot(object):
         print('A: {}'.format(answer))
 
     def guesses(self):
-        guesses = [("kangaroo", 0.5), ("dog", 0.9), ("rabbit", 0.1)]
-        guesses = [("kangaroo", 10.5), ("dog", 0.9), ("rabbit", -0.1)]
+        guesses = [("kangaroo", 0.5), ("dog", 0.9), ("rabbit", 0.1), ("octopus", 0.01)]
         return sorted(guesses, key=lambda x: -x[1])

@@ -5,11 +5,13 @@ from flask import render_template, session, request, url_for, redirect
 #, flash, Markup
 from app.server import app, cache, DEFAULT_TIMEOUT
 
-from app.qa_bot import QaBot
+from app.qa_bot import QaBot, NUM_QUESTIONS
+from app.db import add_game
 
 @app.route('/')
-@cache.cached(timeout=DEFAULT_TIMEOUT)
 def new_game():
+    session['questions'] = {}
+    session['question_number'] = 1
     return render_template('new_game.html')
 
 @app.route('/about')
@@ -17,7 +19,7 @@ def new_game():
 def about():
     return render_template('about.html')
 
-@app.route('/question')
+@app.route('/question/')
 def question():
     # display a question and a set of guesses
     print(session.get('questions', 'No questions'))
@@ -27,14 +29,16 @@ def question():
     return render_template(
         'question.html',
         question=question_txt,
+        question_number=session.get('question_number', 1),
         options=options,
         guesses=guesses
     )
 
 @app.route('/answer')
 def answer():
+    session['question_number'] = session.get('question_number', 0)+1
     # receive an answer from a user
-    bot = QaBot([])
+    bot = QaBot(session['questions'])
     question_txt = request.args.get('question')
     answer_txt = request.args.get('answer')
 
@@ -47,14 +51,26 @@ def answer():
         session['questions'] = questions
     else:
         print("Did not receive an answer")
+
+    if session['question_number'] > NUM_QUESTIONS:
+        return redirect(url_for('guess'))
     return redirect(url_for('question'))
 
-@app.route('/set/<key>/<value>')
-def set_var(key, value):
-    session[key] = value
-    return 'ok'
+@app.route('/guess')
+def guess():
+    bot = QaBot(session['questions'])
+    guesses = bot.guesses()
+    return render_template(
+        'guess.html',
+        guesses=guesses
+    )
 
-@app.route('/get/<key>')
-@cache.cached(timeout=10, key_prefix='session_vars')
-def get_var(key):
-    return str(session.get(key, 'not set'))
+@app.route('/feedback/')
+@app.route('/feedback/<solution>')
+def feedback(solution=None):
+    if solution is not None:
+        # save solution and questions to data base
+        questions = session.get('questions', {})
+        if questions != {}:
+            add_game(solution, questions)
+    return redirect(url_for('new_game'))

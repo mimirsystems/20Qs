@@ -4,7 +4,6 @@ Runs the server in debug mode
 
 from os import path, walk
 from app.routes import app
-from app.db import db
 
 def get_watches():
     watch_files = []
@@ -14,7 +13,7 @@ def get_watches():
     return watch_files
 
 # Config
-WATCH = ['templates', 'static']
+WATCH = ['app/templates', 'app/static']
 app.config['SECRET_KEY'] = 'loljk'
 app.config['PORT'] = 8000
 app.config['DEBUG'] = True

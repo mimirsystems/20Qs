@@ -1,10 +1,13 @@
-{% macro input(name, value='', type='text', size=20) -%}
-    <input type="{{ type }}" name="{{ name }}" value="{{
-        value|e }}" size="{{ size }}">
-{%- endmacro %}
-
 {% macro title_txt(text) -%}
 {{ text.upper().replace('_', ' ') }}
+{%- endmacro %}
+
+{% macro plural(num, word) -%}
+{% if num == 1 %}{{word}}{% else %}{{word}}s{% endif %}
+{%- endmacro %}
+
+{% macro a_an(text) -%}
+{% if text != [] and text[0] in 'aeiou' %}an {{text}}{% else %}a {{text}}{% endif %}
 {%- endmacro %}
 
 {% macro nav_link(url, label) -%}
