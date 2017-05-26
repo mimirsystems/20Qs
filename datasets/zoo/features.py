@@ -9,7 +9,7 @@ FEATURES = [
     ("Can it fly?", YES_NO),
     ("Can it swim?", YES_NO),
     ("Is it a predator?", YES_NO),
-    ("Is it have toothed?", YES_NO),
+    ("Is it toothed?", YES_NO),
     ("Does it have a backbone?", YES_NO),
     ("Does it breathe?", YES_NO),
     ("Is it venomous?", YES_NO),
