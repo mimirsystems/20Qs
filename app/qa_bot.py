@@ -3,7 +3,8 @@
 """
 from random import choice
 import sqlalchemy
-from app.db import Question, Animal, add_game
+from sqlalchemy.ext.serializer import loads, dumps
+from app.db import Question, Animal, Entry, add_game
 
 NUM_QUESTIONS = 20
 
@@ -18,6 +19,13 @@ class QaBot(object):
         self.guesses = None
         if serialized is not None:
             self.__dict__.update(serialized)
+            self.guesses = loads(self.guesses)
+
+    def serialize(self):
+        return {
+            'questions': self.questions,
+            'guesses': dumps(self.guesses)
+        }
 
     def get_guesses(self):
         """
@@ -26,17 +34,29 @@ class QaBot(object):
         if self.guesses is not None:
             print("CACHED GUESSES")
             return self.guesses
-
-        self.guesses = [("kangaroo", 0.5), ("dog", 0.9), ("rabbit", 0.1), ("octopus", 0.01)]
+        print("RECALCULATING GUESSES")
+        animals = []
         try:
             animals_query = Animal.query
             animals = animals_query.all()
-            total_plays = sum([ani.count for ani in animals])
-            self.guesses = [(ani.name, ani.count/total_plays) for ani in animals]
+
+            for animal in animals:
+                print("Animal: ", animal)
+                for question in self.answered:
+                    print("Q: ", question)
+                    entries = Entry.query.filter_by(
+                        Entry.animal == animal,
+                        Entry.question == question
+                    )
+                    print(entries)
+
         except sqlalchemy.exc.OperationalError as error:
             print("SQLALCHEMY ERROR: ", error)
 
-        self.guesses = sorted(self.guesses, key=lambda x: -x[1])
+        total_plays = sum([animal.count for animal in animals])
+        for animal in animals:
+            animal.prob = animal.count/total_plays
+        self.guesses = sorted(animals, key=lambda animal: -animal.prob)
         return self.guesses
 
     def get_question(self):
@@ -89,6 +109,3 @@ class QaBot(object):
 
     def game_finished(self):
         return self.question_number() > NUM_QUESTIONS
-
-    def serialize(self):
-        return self.__dict__

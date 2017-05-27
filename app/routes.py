@@ -59,17 +59,17 @@ def answer(bot):
         return redirect(url_for('guess'))
     return redirect(url_for('question'))
 
-@with_bot
 @app.route('/guess')
+@with_bot
 def guess(bot):
     return render_template(
         'guess.html',
         guesses=bot.get_guesses()
     )
 
-@with_bot
 @app.route('/feedback/', defaults={'solution': None}, methods=['GET', 'POST'])
 @app.route('/feedback/<solution>', methods=['GET', 'POST'])
+@with_bot
 def feedback(bot, solution):
     solution = request.form.get(
         'solution',

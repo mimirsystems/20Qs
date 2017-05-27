@@ -16,10 +16,10 @@
           <i class="material-icons">help_outline</i>Guesses
         </div>
         <div class="collapsible-body collection">
-            {% for (guess, prob) in guesses[:5] %}
+            {% for guess in guesses[:5] %}
               <div class="collection-item filled-container">
-                <div class="filled green" style="width: {{to_percent(prob)}}">
-                  {{guess}}: {{to_percent(prob)}}
+                <div class="filled green" style="width: {{to_percent(guess.prob)}}">
+                  {{guess.name}}: {{to_percent(guess.prob)}}
                 </div>
               </div>
             {% endfor %}

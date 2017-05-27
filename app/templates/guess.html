@@ -1,14 +1,14 @@
 {% extends "layout.html" %}
 {% block main %}
-  <h3 class="center">Is it {{a_an(guesses[0][0])}}?</h4>
+  <h3 class="center">Is it {{a_an(guesses[0].name)}}?</h4>
   <div class="collection">
-    {% for (guess, prob) in guesses[:10] %}
-      <a class="collection-item" href="{{url_for('feedback', solution=guess)}}">
-        It was {{a_an(guess)}}
+    {% for guess in guesses[:10] %}
+      <a class="collection-item" href="{{url_for('feedback', solution=guess.name)}}">
+        It was {{a_an(guess.name)}}
         <i class="material-icons right tooltipped"
           data-position="right"
           data-delay="30"
-          data-tooltip="P = {{prob}}"
+          data-tooltip="P = {{to_percent(guess.prob)}}"
           >done</i>
       </a>
     {% endfor %}
@@ -16,10 +16,10 @@
   <div class="row">
     <form class="col s12" action="{{ url_for('feedback') }}" method="post">
       Nope, it was a
-      <div class="input-field inline">
+      <input type="submit" class="btn right" value="Submit"/>
+      <div style="overflow: hidden; padding-right: .5em;">
         <input placeholder="Your animal" name="solution" type="text" class="validate"/>
       </div>
-      <button type="submit" class="btn center"><i class="material-icons">done</i></button>
     </form>
   </div>
 {% endblock %}
