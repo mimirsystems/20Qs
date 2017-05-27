@@ -4,22 +4,27 @@
 import datetime
 from app.server import db
 
-def add_game(name, questions):
+def add_game(name, questions, batch=False):
     """
     Adds the data from a game to the database
     """
+
+    if isinstance(questions, dict):
+        questions = questions.items()
+
     animal = Animal.query.filter(Animal.name == name).first()
     if animal is None:
         animal = Animal(name)
         db.session.add(animal)
-    for question_txt, answer_txt in questions.items():
+    for question_txt, answer_txt in questions:
         question = Question.query.filter(Question.question == question_txt).first()
         if question is None:
             question = Question(question_txt)
             db.session.add(question)
         answer = Entry(question, answer_txt, animal)
         db.session.add(answer)
-    db.session.commit()
+    if not batch:
+        db.session.commit()
 
 
 class Entry(db.Model):

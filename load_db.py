@@ -12,7 +12,8 @@ def main():
     games = get_games_from_csv('datasets/zoo/zoo.csv', FEATURES)
 
     for game in games:
-        add_game(*game)
+        add_game(*game, batch=True)
+    db.session.commit()
 
     print("Check that something went in!")
     print(Animal.query.all())
