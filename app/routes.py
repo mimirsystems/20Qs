@@ -52,13 +52,10 @@ def question(bot):
 @with_bot
 def answer(bot):
     """ Take an answer from the player """
-    # receive an answer from a user
     bot.give_answer(
         request.args.get('question'),
         request.args.get('answer')
     )
-    session['bot'] = bot.serialize()
-
     if bot.game_finished():
         return redirect(url_for('guess'))
     return redirect(url_for('question'))
