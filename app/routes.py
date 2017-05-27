@@ -38,7 +38,6 @@ def question(bot):
     if action == 'back':
         bot.undo()
 
-    print("Qs: ", bot.questions)
     question_txt, options = bot.get_question()
     return render_template(
         'question.html',

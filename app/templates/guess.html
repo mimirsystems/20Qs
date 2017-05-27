@@ -2,7 +2,7 @@
 {% block main %}
   <h3 class="center">Is it {{a_an(guesses[0][0])}}?</h4>
   <div class="collection">
-    {% for (guess, prob) in guesses %}
+    {% for (guess, prob) in guesses[:10] %}
       <a class="collection-item" href="{{url_for('feedback', solution=guess)}}">
         It was {{a_an(guess)}}
         <i class="material-icons right tooltipped"

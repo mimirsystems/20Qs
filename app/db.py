@@ -149,4 +149,4 @@ class Animal(db.Model):
         self.count += 1
 
     def __repr__(self):
-        return "{}, (was solution {} times)".format(self.name, self.count)
+        return "{} (x{})".format(self.name, self.count)

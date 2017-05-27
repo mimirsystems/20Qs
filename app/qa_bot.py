@@ -3,7 +3,7 @@
 """
 from random import choice
 import sqlalchemy
-from app.db import Question, add_game #, Animal
+from app.db import Question, Animal, add_game
 
 NUM_QUESTIONS = 20
 
@@ -19,18 +19,25 @@ class QaBot(object):
         if serialized is not None:
             self.__dict__.update(serialized)
 
-    def finish_game(self, solution):
-        if solution is not None:
-            # save solution and questions to data base
-            print("ADD GAME ", solution, self.questions)
-            add_game(solution, self.questions)
-
     def get_guesses(self):
+        """
+        Get a weighted list of animals that 'best' fit our information
+        """
         if self.guesses is not None:
+            print("CACHED GUESSES")
             return self.guesses
-        guesses = [("kangaroo", 0.5), ("dog", 0.9), ("rabbit", 0.1), ("octopus", 0.01)]
-        self.guesses = guesses
-        return sorted(guesses, key=lambda x: -x[1])
+
+        self.guesses = [("kangaroo", 0.5), ("dog", 0.9), ("rabbit", 0.1), ("octopus", 0.01)]
+        try:
+            animals_query = Animal.query
+            animals = animals_query.all()
+            total_plays = sum([ani.count for ani in animals])
+            self.guesses = [(ani.name, ani.count/total_plays) for ani in animals]
+        except sqlalchemy.exc.OperationalError as error:
+            print("SQLALCHEMY ERROR: ", error)
+
+        self.guesses = sorted(self.guesses, key=lambda x: -x[1])
+        return self.guesses
 
     def get_question(self):
         """ Return the next question to ask """
@@ -62,11 +69,15 @@ class QaBot(object):
 
     def give_answer(self, question, answer):
         if question and answer:
-            print('Q: {}'.format(question))
-            print('A: {}'.format(answer))
             self.questions.append((question, answer))
             self.guesses = None # Reset
         return self.questions
+
+    def finish_game(self, solution):
+        if solution is not None:
+            print("ADD GAME ", solution, self.questions)
+            # save solution and questions to data base
+            add_game(solution, self.questions)
 
     def undo(self):
         if self.questions != []:
