@@ -4,13 +4,22 @@
   <div class="collection">
     {% for (guess, prob) in guesses %}
       <a class="collection-item" href="{{url_for('feedback', solution=guess)}}">
-          It was {{a_an(guess)}}
-          <i class="material-icons right tooltipped"
-            data-position="right"
-            data-delay="30"
-            data-tooltip="P = {{prob}}"
-            >done</i>
-        </a>
+        It was {{a_an(guess)}}
+        <i class="material-icons right tooltipped"
+          data-position="right"
+          data-delay="30"
+          data-tooltip="P = {{prob}}"
+          >done</i>
+      </a>
     {% endfor %}
+  </div>
+  <div class="row">
+    <form class="col s12" action="{{ url_for('feedback') }}" method="post">
+      Nope, it was a
+      <div class="input-field inline">
+        <input placeholder="Your animal" name="solution" type="text" class="validate"/>
+      </div>
+      <button type="submit" class="btn center"><i class="material-icons">done</i></button>
+    </form>
   </div>
 {% endblock %}

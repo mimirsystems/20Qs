@@ -58,19 +58,22 @@ def answer():
 
 @app.route('/guess')
 def guess():
-    bot = QaBot(session['questions'])
+    bot = QaBot(session.get('questions', {}))
     guesses = bot.guesses()
     return render_template(
         'guess.html',
         guesses=guesses
     )
 
-@app.route('/feedback/')
-@app.route('/feedback/<solution>')
-def feedback(solution=None):
+@app.route('/feedback/', defaults={'solution': None}, methods=['GET', 'POST'])
+@app.route('/feedback/<solution>', methods=['GET', 'POST'])
+def feedback(solution):
+    if solution is None:
+        solution = request.form.get('solution')
     if solution is not None:
         # save solution and questions to data base
         questions = session.get('questions', {})
         if questions != {}:
+            print("ADD GAME ", solution, questions)
             add_game(solution, questions)
     return redirect(url_for('new_game'))
