@@ -65,7 +65,7 @@ class Entry(db.Model):
         animal.increment_count()
 
     def __repr__(self):
-        return "Question: " + self.question.question + " \nAnswer: " + self.answer
+        return "Question: " + self.question.question + " Answer: " + self.answer
 
 
 class Question(db.Model):
@@ -107,7 +107,7 @@ class Question(db.Model):
         return query
 
     def __repr__(self):
-        return self.question + " \nAsked: " + str(self.count) + " times"
+        return self.question + "(Asked: " + str(self.count) + " times)"
 
 
 class Animal(db.Model):
@@ -144,4 +144,4 @@ class Animal(db.Model):
         self.count += 1
 
     def __repr__(self):
-        return "{} was a user's guess {} times".format(self.name, self.count)
+        return "{}, (was solution {} times)".format(self.name, self.count)
