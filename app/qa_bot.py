@@ -4,7 +4,7 @@
 from random import choice
 import sqlalchemy
 from sqlalchemy.ext.serializer import loads, dumps
-from app.db import Question, Animal, Entry, add_game
+from .db import Question, Animal, Entry, add_game
 
 NUM_QUESTIONS = 20
 
@@ -39,23 +39,23 @@ class QaBot(object):
         try:
             animals_query = Animal.query
             animals = animals_query.all()
+            for animal in animals:
+                animal.prob = animal.count
 
             for animal in animals:
-                print("Animal: ", animal)
-                for question in self.answered:
-                    print("Q: ", question)
-                    entries = Entry.query.filter_by(
-                        Entry.animal == animal,
-                        Entry.question == question
-                    )
-                    print(entries)
-
+                for question, answer in self.questions:
+                    entries = Entry.query\
+                            .filter(Entry.animal == animal)\
+                            .filter(Entry.question.has(question=question))
+                    responses = [ent.answer for ent in entries.all()] + ['Yes', 'No', 'Unsure']
+                    responses = {resp:responses.count(resp) for resp in responses}
+                    animal.prob *= responses[answer] / sum(responses.values())
         except sqlalchemy.exc.OperationalError as error:
             print("SQLALCHEMY ERROR: ", error)
 
-        total_plays = sum([animal.count for animal in animals])
+        total_plays = sum([animal.prob for animal in animals])
         for animal in animals:
-            animal.prob = animal.count/total_plays
+            animal.prob /= total_plays
         self.guesses = sorted(animals, key=lambda animal: -animal.prob)
         return self.guesses
 

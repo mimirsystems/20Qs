@@ -2,12 +2,14 @@
     Set up tables and query functions
 """
 import datetime
-from app.server import db
+from .server import db
 
 def add_game(name, questions, batch=False):
     """
     Adds the data from a game to the database
     """
+    if name is None or name.strip() == "" or questions is None:
+        return
 
     if isinstance(questions, dict):
         questions = questions.items()

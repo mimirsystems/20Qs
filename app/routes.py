@@ -3,8 +3,8 @@
 """
 from flask import render_template, session, request, url_for, redirect
 #, flash, Markup
-from app.server import app, cache, DEFAULT_TIMEOUT
-from app.qa_bot import QaBot
+from .server import app, cache, DEFAULT_TIMEOUT
+from .qa_bot import QaBot
 
 def with_bot(func):
     name = func.__name__
