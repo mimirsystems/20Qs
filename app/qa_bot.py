@@ -64,30 +64,16 @@ class QaBot(object):
             if self.questions != []:
                 new_qs = new_qs.filter(
                     ~Question.question.in_(
-                        [q[0] for q in self.questions]
-                    )
-                )
-
-
+                        [q[0] for q in self.questions]))
             # filter / order and limit to get maximal split
             questions = new_qs.all()
             animals = self.get_guesses()[:SOLUTIONS_TO_CONSIDER]
             for question in questions:
-                response_set = {answer:1 for answer in ANSWERS}
-                for animal in animals:
-                    responses = query_responses(animal.name, question.question)
-                    response = sorted(responses.items(), key=lambda x: -x[1])[0][0]
-                    response_set[response] += animal.prob
-                total = sum(response_set.values())
-                probs = [count/total for count in response_set.values()]
-                split = sum([-(p)*log2(p) for p in probs])
-
+                split = get_entropy(question, animals)
                 print("Q: {}, Entropy: {:.2f}".format(question, split))
-
                 if split > best_q.get('split', 0): # maximize entropy
                     best_q['split'] = split
                     best_q['question'] = question
-
         except sqlalchemy.exc.OperationalError as error:
             print("SQLALCHEMY ERROR: ", error)
 
@@ -118,6 +104,25 @@ class QaBot(object):
 
     def game_finished(self):
         return self.question_number() > NUM_QUESTIONS
+
+
+def get_entropy(question, animals):
+    """ Finds the entropy of the answers of a question for a set of animals """
+    response_set = {answer:0.000001 for answer in ANSWERS}
+
+    for animal in animals:
+        responses = query_responses(animal.name, question.question)
+        responses = sorted(responses.items(), key=lambda resp: -resp[1])
+        (first, _) = responses[0]
+        (last, _) = responses[0]
+        response_set[first] += animal.prob
+        response_set[last] += (1-animal.prob)
+
+    total = sum(response_set.values())
+    probs = [count/total for count in response_set.values()]
+
+    entropy = sum([-(p)*log2(p) for p in probs])
+    return entropy
 
 
 def adjust_guesses(animals, question, answer):

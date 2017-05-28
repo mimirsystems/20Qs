@@ -1,10 +1,12 @@
 """
     Defines routes
 """
+import random
 from flask import render_template, session, request, url_for, redirect
 #, flash, Markup
 from .server import app, cache, DEFAULT_TIMEOUT
-from .qa_bot import QaBot
+from .qa_bot import QaBot, ANSWERS
+from .db import add_question, add_answer, Animal
 
 def with_bot(func):
     name = func.__name__
@@ -77,3 +79,35 @@ def feedback(bot, solution):
     )
     bot.finish_game(solution)
     return redirect(url_for('new_game'))
+
+@app.route('/suggest/', defaults={'question': None}, methods=['GET', 'POST'])
+@app.route('/suggest/<question>', methods=['GET', 'POST'])
+@with_bot
+def suggest_a_question(bot, question):
+    """
+    Takes suggestions for questions from the user
+    """
+    question = request.form.get(
+        'question',
+        question
+    )
+    if question is None:
+        return render_template(
+            'suggest_question.html',
+            question=question
+        )
+
+    add_question(question)
+    animal = request.form.get('animal')
+    answer = request.form.get('answer')
+    if animal and answer:
+        add_answer(question, animal.name, answer)
+
+    animal = random.choice(Animal.query.all()) # Get an animal that we don't have an answer for
+
+    return render_template(
+        'suggest_question_answer.html',
+        question=question,
+        animal=animal.name,
+        options=ANSWERS
+    )

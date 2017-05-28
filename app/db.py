@@ -4,29 +4,52 @@
 import datetime
 from .server import db
 
-def add_game(name, questions, batch=False):
+def add_game(animal_name, questions, batch=False):
     """
     Adds the data from a game to the database
     """
-    if name is None or name.strip() == "" or questions is None:
-        return
-
     if isinstance(questions, dict):
         questions = questions.items()
 
-    animal = Animal.query.filter(Animal.name == name).first()
-    if animal is None:
-        animal = Animal(name)
-        db.session.add(animal)
+    animal = add_animal(animal_name, batch=batch)
     for question_txt, answer_txt in questions:
-        question = Question.query.filter(Question.question == question_txt).first()
-        if question is None:
-            question = Question(question_txt)
-            db.session.add(question)
-        answer = Entry(question, answer_txt, animal)
-        db.session.add(answer)
+        question = add_question(question_txt, batch=batch)
+        add_answer(question, answer_txt, animal, batch=batch)
+
+def add_animal(animal_name, batch=False):
+    """ Add an animal if not already found, then return it """
+    animal_name = animal_name.lower().strip()
+    animal = Animal.query.filter(Animal.name == animal_name).first()
+    if animal is None:
+        animal = Animal(animal_name)
+        db.session.add(animal)
     if not batch:
         db.session.commit()
+    return animal
+
+def add_question(question_txt, batch=False):
+    """ Add a question if not already found, then return it """
+    question = Question.query.filter(Question.question == question_txt).first()
+    if question is None:
+        if question_txt == '':
+            return
+        if question_txt[-1] != '?':
+            question_txt += '?'
+        question = Question(question_txt)
+        db.session.add(question)
+        if not batch:
+            db.session.commit()
+    return question
+
+def add_answer(question, answer_txt, animal, batch=False):
+    """ Add an entry """
+    if question is None or answer_txt is None or animal is None:
+        return
+    answer = Entry(question, answer_txt, animal)
+    db.session.add(answer)
+    if not batch:
+        db.session.commit()
+    return answer
 
 
 class Entry(db.Model):

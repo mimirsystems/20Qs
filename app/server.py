@@ -7,14 +7,6 @@ from flask_cache import Cache
 from flask_material import Material
 from flask_sqlalchemy import SQLAlchemy
 
-# Forms
-# from flask_wtf import Form
-# from flask_wtf.file import FileField
-# from wtforms import TextField, HiddenField, ValidationError, RadioField,\
-    # BooleanField, SubmitField, IntegerField, FormField, validators
-# from wtforms.validators import Required
-
-
 app = Flask(__name__)
 
 # Base config
@@ -30,7 +22,7 @@ db = SQLAlchemy(app)
 db.create_all()
 
 # Routing
-NAV_ROUTES = ["new_game", "about"]
+NAV_ROUTES = ["new_game", "about", "suggest_a_question"]
 
 # Colours
 COLOURS = {

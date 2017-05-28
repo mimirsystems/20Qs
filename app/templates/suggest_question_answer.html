@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+{% block main %}
+  <h3 class="center">Suggest a question</h3>
+  <h4 class="center">{{question}}</h4>
+  <h4 class="center">Answering for {{animal}}</h4>
+  <div class="collection">
+    {% for op in options %}
+      <a href="{{ url_for('suggest_a_question', question=question, animal=animal, answer=op)}}" class="waves-effect collection-item">
+        <i class="material-icons right">play_arrow</i>{{op}}
+      </a>
+    {% endfor %}
+  </div>
+{% endblock %}

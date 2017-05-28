@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block main %}
-  <h3 class="center">Question {{question_number}}/20</h4>
-  <h4 class="center">{{question}}</h2>
+  <h3 class="center">Question {{question_number}}/20</h3>
+  <h4 class="center">{{question}}</h4>
   <div class="collection">
     {% for op in options %}
       <a href="{{ url_for('answer', question=question, answer=op)}}" class="waves-effect collection-item">
