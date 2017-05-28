@@ -13,9 +13,9 @@
     <a class="waves-effect btn" href="{{url_for('question', action='back')}}">UNDO</a>
   </div>
   <div class="container">
-    <ul class="collapsible" data-collapsible="accordion">
+    <ul class="collapsible" onclick="toggle_guesses();">
       <li>
-        <div class="collapsible-header active">
+        <div class="collapsible-header" id="guesses_list">
           <i class="material-icons">help_outline</i>Guesses
         </div>
         <div class="collapsible-body collection">

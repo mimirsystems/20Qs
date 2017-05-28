@@ -3,16 +3,28 @@
 {% import "material/wtf.html" as wtf %}
 
 {% block metas %}
-{{ super() }}
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  {{ super() }}
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 {% endblock %}
 
 {% block scripts %}
-{{ super() }}
-<script>
-  $( document ).ready(function(){
-    $(".button-collapse").sideNav();
-  })
+  {{ super() }}
+  <script>
+    $( document ).ready(function(){
+      $(".button-collapse").sideNav();
+      set_guesses();
+    })
+
+function toggle_guesses() {
+  localStorage.guesses = (localStorage.guesses == "closed") ?
+    "open" : "closed";
+}
+
+function set_guesses() {
+  if(localStorage.guesses != "closed") {
+    $('#guesses_list').click();
+  }
+}
 </script>
 {% endblock %}
 
