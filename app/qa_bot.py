@@ -1,12 +1,13 @@
 """
     defines a 20Qs bot
 """
-from random import choice
+from math import log2
 import sqlalchemy
 from .db import Question, Animal, Entry, add_game
 
 NUM_QUESTIONS = 20
 ANSWERS = ['Yes', 'No', 'Unsure']
+SOLUTIONS_TO_CONSIDER = 15
 
 class QaBot(object):
     """
@@ -45,10 +46,9 @@ class QaBot(object):
         print("RECALCULATING GUESSES")
         self.guesses = []
         try:
-            animals_query = Animal.query
-            self.guesses = animals_query.all()
+            self.guesses = Animal.query.all()
             for animal in self.guesses:
-                animal.prob = 1 # animal.count
+                animal.prob = 1.0/len(self.guesses) # animal.count
         except sqlalchemy.exc.OperationalError as error:
             print("SQLALCHEMY ERROR: ", error)
 
@@ -58,27 +58,43 @@ class QaBot(object):
 
     def get_question(self):
         """ Return the next question to ask """
-        if self.guesses is None:
-            self.get_guesses()
-
-        question_query = []
+        best_q = {}
         try:
-            new_questions = Question.query.filter(~Question.id.in_([q[0] for q in self.questions]))
+            new_qs = Question.query
+            if self.questions != []:
+                new_qs = new_qs.filter(
+                    ~Question.question.in_(
+                        [q[0] for q in self.questions]
+                    )
+                )
+
 
             # filter / order and limit to get maximal split
-            question_query = new_questions.all()
+            questions = new_qs.all()
+            animals = self.get_guesses()[:SOLUTIONS_TO_CONSIDER]
+            for question in questions:
+                response_set = {answer:1 for answer in ANSWERS}
+                for animal in animals:
+                    responses = query_responses(animal.name, question.question)
+                    response = sorted(responses.items(), key=lambda x: -x[1])[0][0]
+                    response_set[response] += animal.prob
+                total = sum(response_set.values())
+                probs = [count/total for count in response_set.values()]
+                split = sum([-(p)*log2(p) for p in probs])
+
+                print("Q: {}, Entropy: {:.2f}".format(question, split))
+
+                if split > best_q.get('split', 0): # maximize entropy
+                    best_q['split'] = split
+                    best_q['question'] = question
+
         except sqlalchemy.exc.OperationalError as error:
             print("SQLALCHEMY ERROR: ", error)
 
-        if question_query == []:
+        if 'question' not in best_q:
             return ("Sorry, I don't know this one", [])
 
-        question = choice(question_query)
-
-        q_txt = question.question
-        if q_txt[-1] != '?':
-            q_txt += '?'
-        return (q_txt, ANSWERS)
+        return (best_q['question'].question, ANSWERS)
 
     def give_answer(self, question, answer):
         if question and answer:
@@ -110,11 +126,7 @@ def adjust_guesses(animals, question, answer):
     """
     try:
         for animal in animals:
-            entries = Entry.query\
-                    .filter(Entry.animal == animal)\
-                    .filter(Entry.question.has(question=question))
-            responses = [ent.answer for ent in entries.all()] + ANSWERS
-            responses = {resp:responses.count(resp) for resp in responses}
+            responses = query_responses(animal.name, question)
             animal.prob *= responses[answer] / sum(responses.values())
     except sqlalchemy.exc.OperationalError as error:
         print("SQLALCHEMY ERROR: ", error)
@@ -126,3 +138,11 @@ def adjust_guesses(animals, question, answer):
 
     animals = sorted(animals, key=lambda animal: -animal.prob)
     return animals
+
+def query_responses(animal, question):
+    entries = Entry.query\
+            .filter(Entry.animal.has(name=animal))\
+            .filter(Entry.question.has(question=question))
+    responses = [ent.answer for ent in entries.all()] + ANSWERS
+    responses = {resp:responses.count(resp) for resp in responses}
+    return responses
