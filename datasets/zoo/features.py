@@ -2,7 +2,7 @@ YES_NO = ["No", "Yes"]
 
 FEATURES = [
     ("Name", None),
-    ("Does it have hair?", YES_NO),
+    ("Does it have fur?", YES_NO),
     ("Does it have feathers?", YES_NO),
     ("Does it lay eggs?", YES_NO),
     ("Does it produce milk?", YES_NO),
