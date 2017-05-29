@@ -47,11 +47,11 @@ def question(bot):
     if action == 'back':
         bot.undo()
 
-    question_txt, options = bot.get_question()
+    question, options = bot.get_question()
     return render_template(
         'question.html',
         question_number=bot.question_number(),
-        question=question_txt,
+        question=question,
         options=options,
         guesses=bot.get_guesses()
     )

@@ -58,7 +58,7 @@ class QaBot(object):
 
     def get_question(self):
         """ Return the next question to ask """
-        best_q = {}
+        best_q = None
         try:
             new_qs = Question.query
             if self.questions != []:
@@ -71,16 +71,16 @@ class QaBot(object):
             for question in questions:
                 split = get_entropy(question, animals)
                 print("Q: {}, Entropy: {:.2f}".format(question, split))
-                if split > best_q.get('split', 0): # maximize entropy
-                    best_q['split'] = split
-                    best_q['question'] = question
+                if best_q is None or split > best_q.entropy: # maximize entropy
+                    best_q = question
+                    best_q.entropy = split
         except sqlalchemy.exc.OperationalError as error:
             print("SQLALCHEMY ERROR: ", error)
 
-        if 'question' not in best_q:
+        if best_q is None:
             return ("Sorry, I don't know this one", [])
 
-        return (best_q['question'].question, ANSWERS)
+        return (best_q, ANSWERS)
 
     def give_answer(self, question, answer):
         if question and answer:
