@@ -1,10 +1,10 @@
 {% extends "layout.html" %}
 {% block main %}
-  <h3 class="center">Is it {{a_an(guesses[0].name)}}?</h4>
+  <h3 class="center">Is it {{a_an(to_title(guesses[0].name))}}?</h4>
   <div class="collection">
     {% for guess in guesses[:10] %}
       <a class="collection-item" href="{{url_for('feedback', solution=guess.name)}}">
-        It was {{a_an(guess.name)}}
+        It was {{a_an(to_title(guess.name))}}
         <i class="material-icons right tooltipped"
           data-position="right"
           data-delay="30"
