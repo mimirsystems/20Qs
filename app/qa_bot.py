@@ -90,9 +90,10 @@ class QaBot(object):
 
     def finish_game(self, solution):
         if solution is not None:
-            print("ADD GAME ", solution, self.questions)
             # save solution and questions to data base
             add_game(solution, self.questions)
+            #log the outcome
+            log_game(solution, self.guesses)
 
     def undo(self):
         if self.questions != []:

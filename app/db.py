@@ -4,54 +4,6 @@
 import datetime
 from .server import db
 
-def add_game(animal_name, questions, batch=False):
-    """
-    Adds the data from a game to the database
-    """
-    if isinstance(questions, dict):
-        questions = questions.items()
-
-    animal = add_animal(animal_name, batch=batch)
-    for question_txt, answer_txt in questions:
-        question = add_question(question_txt, batch=batch)
-        add_answer(question, answer_txt, animal, batch=batch)
-
-def add_animal(animal_name, batch=False):
-    """ Add an animal if not already found, then return it """
-    animal_name = animal_name.lower().strip()
-    animal = Animal.query.filter(Animal.name == animal_name).first()
-    if animal is None:
-        animal = Animal(animal_name)
-        db.session.add(animal)
-    if not batch:
-        db.session.commit()
-    return animal
-
-def add_question(question_txt, batch=False):
-    """ Add a question if not already found, then return it """
-    question = Question.query.filter(Question.question == question_txt).first()
-    if question is None:
-        if question_txt == '':
-            return
-        if question_txt[-1] != '?':
-            question_txt += '?'
-        question = Question(question_txt)
-        db.session.add(question)
-        if not batch:
-            db.session.commit()
-    return question
-
-def add_answer(question, answer_txt, animal, batch=False):
-    """ Add an entry """
-    if question is None or answer_txt is None or animal is None:
-        return
-    answer = Entry(question, answer_txt, animal)
-    db.session.add(answer)
-    if not batch:
-        db.session.commit()
-    return answer
-
-
 class Entry(db.Model):
     """
     This class stores information of each entry in the survery form
@@ -175,3 +127,80 @@ class Animal(db.Model):
 
     def __repr__(self):
         return "{} (x{})".format(self.name, self.count)
+
+
+class GameLog(db.Model):
+    """
+    This class stores information of each entry in the survery form
+    :field id: Primary key for a game record in the database
+    :field time_created: Game finish time
+    :field win: Was the game a success
+    :field solution: Foreign key from Animal class
+    :field guess: Top guess (ForeignKey from Animal class)
+    """
+    __tablename__ = 'game_log'
+    id = db.Column(db.Integer, primary_key=True)
+    time_created = db.Column(db.TIMESTAMP, server_default=db.func.now())
+    win = db.Column(db.Boolean())
+    solution = db.Column(db.Integer, db.ForeignKey('animals.id'))
+    guess = db.Column(db.Integer, db.ForeignKey('animals.id'))
+
+    def __init__(self, solution, guess):
+        self.win = (solution == guess)
+        self.solution = solution
+        self.guess = guess
+
+
+def log_game(solution, guesses):
+    solution = add_animal(solution).id
+    guess = guesses[0].id
+    log = GameLog(solution, guess)
+    db.session.add(log)
+    db.commit()
+
+def add_game(animal_name, questions, batch=False):
+    """
+    Adds the data from a game to the database
+    """
+    if isinstance(questions, dict):
+        questions = questions.items()
+
+    animal = add_animal(animal_name, batch=batch)
+    for question_txt, answer_txt in questions:
+        question = add_question(question_txt, batch=batch)
+        add_answer(question, answer_txt, animal, batch=batch)
+
+def add_animal(animal_name, batch=False):
+    """ Add an animal if not already found, then return it """
+    animal_name = animal_name.lower().strip()
+    animal = Animal.query.filter(Animal.name == animal_name).first()
+    if animal is None:
+        animal = Animal(animal_name)
+        db.session.add(animal)
+    if not batch:
+        db.session.commit()
+    return animal
+
+def add_question(question_txt, batch=False):
+    """ Add a question if not already found, then return it """
+    question = Question.query.filter(Question.question == question_txt).first()
+    if question is None:
+        if question_txt == '':
+            return
+        if question_txt[-1] != '?':
+            question_txt += '?'
+        question = Question(question_txt)
+        db.session.add(question)
+        if not batch:
+            db.session.commit()
+    return question
+
+def add_answer(question, answer_txt, animal, batch=False):
+    """ Add an entry """
+    if question is None or answer_txt is None or animal is None:
+        return
+    answer = Entry(question, answer_txt, animal)
+    db.session.add(answer)
+    if not batch:
+        db.session.commit()
+    return answer
