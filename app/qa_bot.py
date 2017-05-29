@@ -96,8 +96,9 @@ class QaBot(object):
 
     def undo(self):
         if self.questions != []:
+            question, answer = self.questions[-1]
+            self.guesses = adjust_guesses(self.guesses, question, answer, weighting=-1)
             self.questions.pop()
-            self.guesses = None # will be recaluated
 
     def question_number(self):
         return len(self.questions)+1
@@ -125,14 +126,14 @@ def get_entropy(question, animals):
     return entropy
 
 
-def adjust_guesses(animals, question, answer):
+def adjust_guesses(animals, question, answer, weighting=1):
     """
     Takes a set of guesses and applies a question's answer probability distribution
     """
     try:
         for animal in animals:
             responses = query_responses(animal.name, question)
-            animal.prob *= responses[answer] / sum(responses.values())
+            animal.prob *= pow(responses[answer] / sum(responses.values()), weighting)
     except sqlalchemy.exc.OperationalError as error:
         print("SQLALCHEMY ERROR: ", error)
 
