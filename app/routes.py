@@ -6,7 +6,7 @@ from flask import render_template, session, request, url_for, redirect
 #, flash, Markup
 from .server import app, cache, DEFAULT_TIMEOUT
 from .qa_bot import QaBot, ANSWERS
-from .db import add_question, add_answer, Animal
+from .db import add_question, add_answer, game_stats, Animal
 
 def with_bot(func):
     name = func.__name__
@@ -21,7 +21,14 @@ def with_bot(func):
 @app.route('/about')
 @cache.cached(timeout=DEFAULT_TIMEOUT)
 def about():
-    return render_template('about.html')
+    wins, losses, top_solutions, bot_solutions = game_stats()
+    return render_template(
+        'about.html',
+        wins=wins,
+        losses=losses,
+        top_solutions=top_solutions,
+        bot_solutions=bot_solutions
+    )
 
 @app.route('/')
 @with_bot

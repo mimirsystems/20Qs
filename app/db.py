@@ -2,6 +2,7 @@
     Set up tables and query functions
 """
 import datetime
+from sqlalchemy import func, desc, asc
 from .server import db
 
 class Entry(db.Model):
@@ -36,7 +37,6 @@ class Entry(db.Model):
         if animal != None:
             self.animal = animal
             animal.increment_count()
-
 
     def set_answer(self, animal):
         """
@@ -129,7 +129,7 @@ class Animal(db.Model):
         return "{} (x{})".format(self.name, self.count)
 
 
-class GameLog(db.Model):
+class GameResult(db.Model):
     """
     This class stores information of each entry in the survery form
     :field id: Primary key for a game record in the database
@@ -138,25 +138,30 @@ class GameLog(db.Model):
     :field solution: Foreign key from Animal class
     :field guess: Top guess (ForeignKey from Animal class)
     """
-    __tablename__ = 'game_log'
+    __tablename__ = 'game_results'
     id = db.Column(db.Integer, primary_key=True)
     time_created = db.Column(db.TIMESTAMP, server_default=db.func.now())
     win = db.Column(db.Boolean())
-    solution = db.Column(db.Integer, db.ForeignKey('animals.id'))
-    guess = db.Column(db.Integer, db.ForeignKey('animals.id'))
+    solution = db.Column(db.String(30))
+    guess = db.Column(db.String(30))
 
     def __init__(self, solution, guess):
         self.win = (solution == guess)
         self.solution = solution
         self.guess = guess
 
+    def __repr__(self):
+        if self.win:
+            return "Game won ({})".format(self.solution)
+        return "Game lost (Guessed {}, Solution {})".format(self.guess, self.solution)
+
 
 def log_game(solution, guesses):
-    solution = add_animal(solution).id
-    guess = guesses[0].id
-    log = GameLog(solution, guess)
+    solution = add_animal(solution).name
+    guess = guesses[0].name
+    log = GameResult(solution, guess)
     db.session.add(log)
-    db.commit()
+    db.session.commit()
 
 def add_game(animal_name, questions, batch=False):
     """
@@ -204,3 +209,18 @@ def add_answer(question, answer_txt, animal, batch=False):
     if not batch:
         db.session.commit()
     return answer
+
+def game_stats():
+    wins = GameResult.query.filter(GameResult.win == True).count()
+    losses = GameResult.query.filter(GameResult.win == False).count()
+    top_solutions = db.session.query(
+        func.count(GameResult.solution).label('qty'),
+        GameResult.solution).group_by(GameResult.solution).order_by(desc('qty')).limit(5).all()
+    bot_solutions = db.session.query(
+        func.count(GameResult.solution).label('qty'),
+        GameResult.solution).group_by(GameResult.solution).order_by(asc('qty')).limit(5).all()
+
+    print("TOP")
+    for top in top_solutions:
+        print(top)
+    return wins, losses, top_solutions, bot_solutions

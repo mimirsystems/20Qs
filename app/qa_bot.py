@@ -3,7 +3,7 @@
 """
 from math import log2
 import sqlalchemy
-from .db import Question, Animal, Entry, add_game
+from .db import Question, Animal, Entry, add_game, log_game
 
 NUM_QUESTIONS = 20
 ANSWERS = ['Yes', 'No', 'Unsure']
