@@ -28,11 +28,11 @@
               {{top_solutions|length}} most common {{plural(top_solutions|length, 'Animal')}}
             </th>
           </tr>
-          <tr>
-            {% for (top_c, top_s) in top_solutions %}
+          {% for (top_c, top_s) in top_solutions %}
+            <tr>
               <td>{{top_c}}</td><td class="right">{{to_title(top_s)}}</td>
-            {% endfor %}
-          </tr>
+            </tr>
+          {% endfor %}
         </table>
       </div>
       <div class="col right">
@@ -42,11 +42,11 @@
               {{bot_solutions|length}} least common {{plural(bot_solutions|length, 'Animal')}}
             </th>
           </tr>
-          <tr>
-            {% for (bot_c, bot_s) in bot_solutions %}
+          {% for (bot_c, bot_s) in bot_solutions %}
+            <tr>
               <td>{{bot_c}}</td><td class="right">{{to_title(bot_s)}}</td>
-            {% endfor %}
-          </tr>
+            </tr>
+          {% endfor %}
         </table>
       </div>
     </div>
