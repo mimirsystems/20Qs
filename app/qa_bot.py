@@ -45,7 +45,7 @@ class QaBot(object):
         if self.guesses is not None:
             return self.guesses
         print("RECALCULATING GUESSES")
-        self.guesses = []
+        self.guesses = set()
         try:
             self.guesses = get_all(Animal)
             start_p = 1.0/len(self.guesses)
@@ -54,6 +54,7 @@ class QaBot(object):
         except sqlalchemy.exc.OperationalError as error:
             print("SQLALCHEMY ERROR: ", error)
 
+        self.guesses = list(self.guesses)
         for question, answer in self.questions:
             self.guesses = adjust_guesses(self.guesses, question, answer)
         return self.guesses
@@ -62,7 +63,7 @@ class QaBot(object):
         """ Return the next question to ask """
         best_q = None
         try:
-            questions = get_all(class_ob=Question)
+            questions = get_all(Question)
             if self.questions != []:
                 asked_txt = set([q[0] for q in self.questions])
                 questions = [q for q in questions if q.question not in asked_txt]

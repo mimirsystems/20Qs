@@ -211,8 +211,8 @@ def add_answer(question, answer_txt, animal, batch=False):
         db.session.commit()
     return answer
 
-@cached(key='all/{class_ob.__name__}')
-def get_all(class_ob=None):
+@cached(key='all/{0.__name__}')
+def get_all(class_ob):
     return set(class_ob.query.all())
 
 def game_stats():
