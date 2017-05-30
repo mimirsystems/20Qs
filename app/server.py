@@ -9,7 +9,7 @@ from flask_material import Material
 from flask_sqlalchemy import SQLAlchemy
 
 
-app = Flask(__name__, threaded=True)
+app = Flask(__name__)
 
 # Base config
 DEFAULT_CACHE = 60
