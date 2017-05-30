@@ -3,36 +3,25 @@
 import csv
 from app.db import Entry
 
-<<<<<<< HEAD:saveDB.py
 def save_into_csv():
-
     statistics = read_into_dict()
-
-=======
-def save_to_csv():
     entries = Entry.query.all()
->>>>>>> 77a7f7cfeb121c6e74fc137b1a0442994261f296:save_db.py
+
     with open('datasets/back_up.csv', 'w') as csv_out_file:
         writer = csv.writer(csv_out_file)
         writer.writerow(['Question', 'Answer', 'Animal'])
-        
+
         for (question, animal) in statistics:
             li = statistics[question, animal]
-            row = [question, animal]
-            for entry in li:
-                row.append(entry)
-
-<<<<<<< HEAD:saveDB.py
+            row = [question, animal]+list(li)
             writer.writerow(row)
 
 
 def read_into_dict():
-
     statistics = {}
     entries = db.session.query(Entry).all()
-    
+
     for entry in entries:
-        
         if (entry.question, entry.animal) in statistics:
             li = statistics[entry.question, entry.animal]
             index = get_value(entry.answer)
@@ -45,7 +34,7 @@ def read_into_dict():
             statistics[entry.question, entry.animal] = li
 
     return statistics
-                
+
 
 def get_value(answer):
     NO = 0
@@ -58,9 +47,5 @@ def get_value(answer):
     else:
         return UNSURE
 
-save_into_csv()
-=======
-        for entry in entries:
-            row = [entry.question, entry.answer, entry.animal]
-            writer.writerow(row)
->>>>>>> 77a7f7cfeb121c6e74fc137b1a0442994261f296:save_db.py
+if __name == '__main__':
+    save_into_csv()
