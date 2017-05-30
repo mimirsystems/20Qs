@@ -1,12 +1,17 @@
-from app.db import Animal, Question
-from app.db import Entry
-from app.server import db
-import csv
+""" Save all the entries as aggregates """
 
+import csv
+from app.db import Entry
+
+<<<<<<< HEAD:saveDB.py
 def save_into_csv():
 
     statistics = read_into_dict()
 
+=======
+def save_to_csv():
+    entries = Entry.query.all()
+>>>>>>> 77a7f7cfeb121c6e74fc137b1a0442994261f296:save_db.py
     with open('datasets/back_up.csv', 'w') as csv_out_file:
         writer = csv.writer(csv_out_file)
         writer.writerow(['Question', 'Answer', 'Animal'])
@@ -17,6 +22,7 @@ def save_into_csv():
             for entry in li:
                 row.append(entry)
 
+<<<<<<< HEAD:saveDB.py
             writer.writerow(row)
 
 
@@ -53,3 +59,8 @@ def get_value(answer):
         return UNSURE
 
 save_into_csv()
+=======
+        for entry in entries:
+            row = [entry.question, entry.answer, entry.animal]
+            writer.writerow(row)
+>>>>>>> 77a7f7cfeb121c6e74fc137b1a0442994261f296:save_db.py

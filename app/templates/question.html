@@ -1,10 +1,10 @@
 {% extends "layout.html" %}
 {% block main %}
   <h3 class="center">Question {{question_number}}/20</h3>
-  <h4 class="center">{{question}}</h4>
+  <h4 class="center">{{question.question}}</h4>
   <div class="collection">
     {% for op in options %}
-      <a href="{{ url_for('answer', question=question, answer=op)}}" class="waves-effect collection-item">
+      <a href="{{ url_for('answer', question=question.question, answer=op)}}" class="waves-effect collection-item">
         <i class="material-icons right">play_arrow</i>{{op}}
       </a>
     {% endfor %}
@@ -16,13 +16,13 @@
     <ul class="collapsible" onclick="toggle_guesses();">
       <li>
         <div class="collapsible-header" id="guesses_list">
-          <i class="material-icons">help_outline</i>Guesses
+          <i class="material-icons tooltipped" data-position="bottom" data-tooltip="Entropy: {{ '%0.2f' % question.entropy}}">help_outline</i>Guesses
         </div>
         <div class="collapsible-body collection">
             {% for guess in guesses[:5] %}
               <div class="collection-item filled-container">
                 <div class="filled green" style="width: {{to_percent(guess.prob)}}">
-                  {{guess.name}}: {{to_percent(guess.prob)}}
+                  {{to_title(guess.name)}}: {{to_percent(guess.prob)}}
                 </div>
               </div>
             {% endfor %}

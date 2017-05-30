@@ -2,6 +2,10 @@
 {{ text.upper().replace('_', ' ') }}
 {%- endmacro %}
 
+{% macro to_title(text) -%}
+{{ text.title().replace('_', ' ') }}
+{%- endmacro %}
+
 {% macro plural(num, word) -%}
 {% if num == 1 %}{{word}}{% else %}{{word}}s{% endif %}
 {%- endmacro %}

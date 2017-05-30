@@ -2,26 +2,33 @@
     Defines routes
 """
 import random
+from functools import wraps
 from flask import render_template, session, request, url_for, redirect
 #, flash, Markup
-from .server import app, cache, DEFAULT_TIMEOUT
+from .server import app, cached
 from .qa_bot import QaBot, ANSWERS
-from .db import add_question, add_answer, Animal
+from .db import add_question, add_answer, game_stats, Animal
 
 def with_bot(func):
-    name = func.__name__
+    @wraps(func)
     def with_bot_wrapper(*args, **kwargs):
         bot = QaBot(session.get('bot'))
         r_value = func(bot, *args, **kwargs)
         session['bot'] = bot.serialize()
         return r_value
-    with_bot_wrapper.__name__ = name
     return with_bot_wrapper
 
 @app.route('/about')
-@cache.cached(timeout=DEFAULT_TIMEOUT)
+@cached()
 def about():
-    return render_template('about.html')
+    wins, losses, top_solutions, bot_solutions = game_stats()
+    return render_template(
+        'about.html',
+        wins=wins,
+        losses=losses,
+        top_solutions=top_solutions,
+        bot_solutions=bot_solutions
+    )
 
 @app.route('/')
 @with_bot
@@ -40,11 +47,11 @@ def question(bot):
     if action == 'back':
         bot.undo()
 
-    question_txt, options = bot.get_question()
+    question_ob, options = bot.get_question()
     return render_template(
         'question.html',
         question_number=bot.question_number(),
-        question=question_txt,
+        question=question_ob,
         options=options,
         guesses=bot.get_guesses()
     )
@@ -80,34 +87,33 @@ def feedback(bot, solution):
     bot.finish_game(solution)
     return redirect(url_for('new_game'))
 
-@app.route('/suggest/', defaults={'question': None}, methods=['GET', 'POST'])
-@app.route('/suggest/<question>', methods=['GET', 'POST'])
-@with_bot
-def suggest_a_question(bot, question):
+@app.route('/suggest/', defaults={'question_txt': None}, methods=['GET', 'POST'])
+@app.route('/suggest/<question_txt>', methods=['GET', 'POST'])
+def suggest_a_question(question_txt):
     """
     Takes suggestions for questions from the user
     """
-    question = request.form.get(
+    question_txt = request.form.get(
         'question',
-        question
+        question_txt
     )
-    if question is None:
+    if question_txt is None:
         return render_template(
             'suggest_question.html',
-            question=question
+            question=question_txt
         )
 
-    add_question(question)
+    add_question(question_txt)
     animal = request.form.get('animal')
-    answer = request.form.get('answer')
-    if animal and answer:
-        add_answer(question, animal.name, answer)
+    answer_txt = request.form.get('answer')
+    if animal and answer_txt:
+        add_answer(question_txt, animal.name, answer_txt)
 
     animal = random.choice(Animal.query.all()) # Get an animal that we don't have an answer for
 
     return render_template(
         'suggest_question_answer.html',
-        question=question,
+        question=question_txt,
         animal=animal.name,
         options=ANSWERS
     )

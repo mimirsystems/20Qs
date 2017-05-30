@@ -2,4 +2,54 @@
 {% block main %}
   <h2>About</h2>
   <p>This is a Machine Learning Project for the Machine Learning and Data Mining course run by the University of New South Wales, Australia (COMP9417)</p>
+
+  {% if wins != 0 or losses != 0 %}
+    <div class="row">
+      <div class="col" style="width: 100%">
+        <table class="bordered">
+          <tr>
+            <th>Wins</th>
+            <th>Losses</th>
+            <th>Total</th>
+          </tr>
+          <tr>
+            <td>{{ to_percent(wins/(wins+losses)) }}({{ wins }} {{ plural(wins, 'game') }})</td>
+            <td>{{ to_percent(losses/(wins+losses)) }}({{ losses }} {{ plural(losses, 'game') }})</td>
+            <td>{{ wins+losses }} {{ plural(wins+losses, 'game') }}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <table class="bordered">
+          <tr>
+            <th colspan="2">
+              {{top_solutions|length}} most common {{plural(top_solutions|length, 'Animal')}}
+            </th>
+          </tr>
+          {% for (top_c, top_s) in top_solutions %}
+            <tr>
+              <td>{{top_c}}</td><td class="right">{{to_title(top_s)}}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+      <div class="col right">
+        <table class="bordered">
+          <tr>
+            <th colspan="2">
+              {{bot_solutions|length}} least common {{plural(bot_solutions|length, 'Animal')}}
+            </th>
+          </tr>
+          {% for (bot_c, bot_s) in bot_solutions %}
+            <tr>
+              <td>{{bot_c}}</td><td class="right">{{to_title(bot_s)}}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+  </div>
+{% endif %}
 {% endblock %}

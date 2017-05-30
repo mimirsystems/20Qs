@@ -3,7 +3,8 @@
 """
 from math import log2
 import sqlalchemy
-from .db import Question, Animal, Entry, add_game
+from .server import cached
+from .db import Question, Animal, Entry, add_game, log_game, get_all
 
 NUM_QUESTIONS = 20
 ANSWERS = ['Yes', 'No', 'Unsure']
@@ -44,43 +45,44 @@ class QaBot(object):
         if self.guesses is not None:
             return self.guesses
         print("RECALCULATING GUESSES")
-        self.guesses = []
+        self.guesses = set()
         try:
-            self.guesses = Animal.query.all()
+            self.guesses = get_all(Animal)
+            start_p = 1.0/len(self.guesses)
             for animal in self.guesses:
-                animal.prob = 1.0/len(self.guesses) # animal.count
+                animal.prob = start_p
         except sqlalchemy.exc.OperationalError as error:
             print("SQLALCHEMY ERROR: ", error)
 
+        self.guesses = list(self.guesses)
         for question, answer in self.questions:
             self.guesses = adjust_guesses(self.guesses, question, answer)
         return self.guesses
 
     def get_question(self):
         """ Return the next question to ask """
-        best_q = {}
+        best_q = None
         try:
-            new_qs = Question.query
+            questions = get_all(Question)
             if self.questions != []:
-                new_qs = new_qs.filter(
-                    ~Question.question.in_(
-                        [q[0] for q in self.questions]))
+                asked_txt = set([q[0] for q in self.questions])
+                questions = [q for q in questions if q.question not in asked_txt]
+
             # filter / order and limit to get maximal split
-            questions = new_qs.all()
             animals = self.get_guesses()[:SOLUTIONS_TO_CONSIDER]
             for question in questions:
                 split = get_entropy(question, animals)
-                print("Q: {}, Entropy: {:.2f}".format(question, split))
-                if split > best_q.get('split', 0): # maximize entropy
-                    best_q['split'] = split
-                    best_q['question'] = question
+                # print("Q: {}, Entropy: {:.2f}".format(question, split))
+                if best_q is None or split > best_q.entropy: # maximize entropy
+                    best_q = question
+                    best_q.entropy = split
         except sqlalchemy.exc.OperationalError as error:
             print("SQLALCHEMY ERROR: ", error)
 
-        if 'question' not in best_q:
+        if best_q is None:
             return ("Sorry, I don't know this one", [])
 
-        return (best_q['question'].question, ANSWERS)
+        return (best_q, ANSWERS)
 
     def give_answer(self, question, answer):
         if question and answer:
@@ -107,13 +109,13 @@ class QaBot(object):
     def game_finished(self):
         return self.question_number() > NUM_QUESTIONS
 
-
+@cached(key='entropy/{}/{}')
 def get_entropy(question, animals):
     """ Finds the entropy of the answers of a question for a set of animals """
     response_set = {answer:0.000001 for answer in ANSWERS}
 
     for animal in animals:
-        responses = query_responses(animal.name, question.question)
+        responses = query_responses(animal=animal.name, question=question.question)
         responses = sorted(responses.items(), key=lambda resp: -resp[1])
         (first, _) = responses[0]
         (last, _) = responses[0]
@@ -133,7 +135,7 @@ def adjust_guesses(animals, question, answer, weighting=1):
     """
     try:
         for animal in animals:
-            responses = query_responses(animal.name, question)
+            responses = query_responses(animal=animal.name, question=question)
             animal.prob *= pow(responses[answer] / sum(responses.values()), weighting)
     except sqlalchemy.exc.OperationalError as error:
         print("SQLALCHEMY ERROR: ", error)
@@ -146,7 +148,8 @@ def adjust_guesses(animals, question, answer, weighting=1):
     animals = sorted(animals, key=lambda animal: -animal.prob)
     return animals
 
-def query_responses(animal, question):
+@cached(key='responses/{animal}/{question}')
+def query_responses(animal=None, question=None):
     entries = Entry.query\
             .filter(Entry.animal.has(name=animal))\
             .filter(Entry.question.has(question=question))
