@@ -12,7 +12,7 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 
 # Base config
-DEFAULT_CACHE = 60
+DEFAULT_CACHE = 60*5
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:////tmp/20qs.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 MEMCACHE_SERVERS = os.environ.get('MEMCACHEDCLOUD_SERVERS')
