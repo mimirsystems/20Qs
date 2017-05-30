@@ -8,22 +8,28 @@ from flask_cache import Cache
 from flask_material import Material
 from flask_sqlalchemy import SQLAlchemy
 
+
 app = Flask(__name__)
 
 # Base config
 DEFAULT_CACHE = 60
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:////tmp/20qs.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['CACHE_MEMCACHED_SERVERS'] = os.environ.get('MEMCACHEDCLOUD_SERVERS', [])
-app.config['CACHE_MEMCACHED_USERNAME'] = os.environ.get('MEMCACHEDCLOUD_USERNAME')
-app.config['CACHE_MEMCACHED_PASSWORD'] = os.environ.get('MEMCACHEDCLOUD_PASSWORD')
+MEMCACHE_SERVERS = os.environ.get('MEMCACHEDCLOUD_SERVERS')
+MEMCACHE_USERNAME = os.environ.get('MEMCACHEDCLOUD_USERNAME')
+MEMCACHE_PASSWORD = os.environ.get('MEMCACHEDCLOUD_PASSWORD')
 
 # Extensions
 Material(app)
-if app.config['CACHE_MEMCACHED_SERVERS'] != []:
-    cache = Cache(app, config={'CACHE_TYPE': 'memcached'})
-else:
-    cache = Cache(app, config={'CACHE_TYPE': 'simple'})
+CACHE_CONFIG = {}
+CACHE_CONFIG['CACHE_TYPE'] = 'simple'
+if MEMCACHE_USERNAME and MEMCACHE_PASSWORD and MEMCACHE_SERVERS:
+    print("Connecting to Memcached")
+    CACHE_CONFIG['CACHE_TYPE'] = 'app.flask_cache_backends.bmemcached'
+    CACHE_CONFIG['CACHE_MEMCACHED_USERNAME'] = MEMCACHE_USERNAME
+    CACHE_CONFIG['CACHE_MEMCACHED_PASSWORD'] = MEMCACHE_PASSWORD
+    CACHE_CONFIG['CACHE_MEMCACHED_SERVERS'] = MEMCACHE_SERVERS.split(';')
+cache = Cache(app, config=CACHE_CONFIG)
 # Database
 db = SQLAlchemy(app)
 db.create_all()
@@ -50,7 +56,7 @@ def template_global_variables():
     return globs
 
 # Caching any function
-def cached(timeout=DEFAULT_CACHE, key='view/{path}s'):
+def cached(key='view/{path}s'):
     """ Sets up a function to have cached results """
     def decorator(func):
         """ Gets a cached value or calculates one """
@@ -63,7 +69,7 @@ def cached(timeout=DEFAULT_CACHE, key='view/{path}s'):
             if value is not None:
                 return value
             value = func(*args, **kwargs)
-            cache.set(cache_key, value, timeout=timeout)
+            cache.set(cache_key, value)
             return value
         return decorated_function
     return decorator

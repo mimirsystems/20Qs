@@ -18,7 +18,7 @@ packaging==16.8
 psycopg2==2.6.2
 pylint==1.7.1
 pyparsing==2.2.0
-python3-memcached==1.51
+python-binary-memcached==0.26
 readline==6.2.4.1
 six==1.10.0
 SQLAlchemy==1.1.9
