@@ -63,8 +63,6 @@ def cached(key='view/{path}s'):
         @wraps(func)
         def decorated_function(*args, **kwargs):
             cache_key = key.format(*args, path=request.path, **kwargs)
-            print(cache_key)
-            print(cache)
             value = cache.get(cache_key)
             if value is not None:
                 return value
