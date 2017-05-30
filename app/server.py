@@ -69,7 +69,7 @@ def cached(key='view/{path}s'):
             if value is not None:
                 return value
             value = func(*args, **kwargs)
-            cache.set(cache_key, value)
+            cache.set(cache_key, value, DEFAULT_CACHE)
             return value
         return decorated_function
     return decorator
