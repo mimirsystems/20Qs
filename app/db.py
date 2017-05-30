@@ -3,7 +3,7 @@
 """
 import datetime
 from sqlalchemy import func, desc, asc
-from .server import db
+from .server import db, cached
 
 class Entry(db.Model):
     """
@@ -62,6 +62,7 @@ class Question(db.Model):
     question = db.Column(db.String(200))
     count = db.Column(db.Integer)
     __table_args__ = (db.UniqueConstraint('question'), )
+
 
     def __init__(self, question):
         """
@@ -210,9 +211,14 @@ def add_answer(question, answer_txt, animal, batch=False):
         db.session.commit()
     return answer
 
+@cached(key='all/{class_ob.__name__}')
+def get_all(class_ob=None):
+    return set(class_ob.query.all())
+
 def game_stats():
-    wins = GameResult.query.filter(GameResult.win == True).count()
-    losses = GameResult.query.filter(GameResult.win == False).count()
+    """ Get some stats about the game """
+    wins = GameResult.query.filter(GameResult.win.is_(True)).count()
+    losses = GameResult.query.filter(GameResult.win.is_(False)).count()
     top_solutions = db.session.query(
         func.count(GameResult.solution).label('qty'),
         GameResult.solution).group_by(GameResult.solution).order_by(desc('qty')).limit(5).all()
@@ -220,7 +226,4 @@ def game_stats():
         func.count(GameResult.solution).label('qty'),
         GameResult.solution).group_by(GameResult.solution).order_by(asc('qty')).limit(5).all()
 
-    print("TOP")
-    for top in top_solutions:
-        print(top)
     return wins, losses, top_solutions, bot_solutions

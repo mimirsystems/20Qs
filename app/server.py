@@ -44,13 +44,13 @@ def template_global_variables():
     return globs
 
 # Caching any function
-def cached(timeout=DEFAULT_CACHE, key='view/%s'):
+def cached(timeout=DEFAULT_CACHE, key='view/{path}s'):
     """ Sets up a function to have cached results """
     def decorator(func):
         """ Gets a cached value or calculates one """
         @wraps(func)
         def decorated_function(*args, **kwargs):
-            cache_key = key % request.path
+            cache_key = key.format(*args, path=request.path, **kwargs)
             value = cache.get(cache_key)
             if value is not None:
                 return value

@@ -2,7 +2,7 @@
 Load the db with a dataset (or multiple)
 """
 
-from app.db import Animal, Question, add_game
+from app.db import Animal, Question, add_game, get_all
 from app.server import db
 
 from datasets.loader import get_games_from_csv
@@ -16,10 +16,9 @@ def main():
     db.session.commit()
 
     print("Check that something went in!")
-    print(Animal.query.all())
-    print(Question.query.all())
+    print(get_all(Animal))
+    print(get_all(Question))
 
 if __name__ == '__main__':
     db.create_all()
     main()
-
