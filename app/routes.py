@@ -87,8 +87,8 @@ def feedback(bot, solution):
     bot.finish_game(solution)
     return redirect(url_for('new_game'))
 
-@app.route('/suggest/', defaults={'question': None}, methods=['GET', 'POST'])
-@app.route('/suggest/<question>', methods=['GET', 'POST'])
+@app.route('/suggest/', defaults={'question_txt': None}, methods=['GET', 'POST'])
+@app.route('/suggest/<question_txt>', methods=['GET', 'POST'])
 def suggest_a_question(question_txt):
     """
     Takes suggestions for questions from the user
