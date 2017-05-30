@@ -14,10 +14,16 @@ app = Flask(__name__)
 DEFAULT_CACHE = 60
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:////tmp/20qs.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['CACHE_MEMCACHED_SERVERS'] = os.environ.get('MEMCACHEDCLOUD_SERVERS', [])
+app.config['CACHE_MEMCACHED_USERNAME'] = os.environ.get('MEMCACHEDCLOUD_USERNAME')
+app.config['CACHE_MEMCACHED_PASSWORD'] = os.environ.get('MEMCACHEDCLOUD_PASSWORD')
 
 # Extensions
 Material(app)
-cache = Cache(app, config={'CACHE_TYPE': 'simple'})
+if app.config['CACHE_MEMCACHED_SERVERS'] != []:
+    cache = Cache(app, config={'CACHE_TYPE': 'memcached'})
+else:
+    cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 # Database
 db = SQLAlchemy(app)
 db.create_all()
