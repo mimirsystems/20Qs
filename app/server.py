@@ -2,7 +2,8 @@
 Sets up the server core
 """
 import os
-from flask import Flask
+from functools import wraps
+from flask import Flask, request
 from flask_cache import Cache
 from flask_material import Material
 from flask_sqlalchemy import SQLAlchemy
@@ -10,7 +11,7 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 
 # Base config
-DEFAULT_TIMEOUT = 60
+DEFAULT_CACHE = 60
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:////tmp/20qs.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -41,3 +42,20 @@ def template_global_variables():
         'navs': NAV_ROUTES
     }
     return globs
+
+# Caching any function
+def cached(timeout=DEFAULT_CACHE, key='view/%s'):
+    """ Sets up a function to have cached results """
+    def decorator(func):
+        """ Gets a cached value or calculates one """
+        @wraps(func)
+        def decorated_function(*args, **kwargs):
+            cache_key = key % request.path
+            value = cache.get(cache_key)
+            if value is not None:
+                return value
+            value = func(*args, **kwargs)
+            cache.set(cache_key, value, timeout=timeout)
+            return value
+        return decorated_function
+    return decorator
