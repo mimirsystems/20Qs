@@ -30,7 +30,8 @@
           </tr>
           {% for (top_c, top_s) in top_solutions %}
             <tr>
-              <td>{{top_c}}</td><td class="right">{{to_title(top_s)}}</td>
+              <td>{{to_title(top_s)}}</td>
+              <td class="right">{{top_c}} {{plural(top_c, 'game')}}</td>
             </tr>
           {% endfor %}
         </table>
@@ -44,7 +45,8 @@
           </tr>
           {% for (bot_c, bot_s) in bot_solutions %}
             <tr>
-              <td>{{bot_c}}</td><td class="right">{{to_title(bot_s)}}</td>
+              <td>{{to_title(bot_s)}}</td>
+              <td class="right">{{bot_c}} {{plural(bot_c, 'game')}}</td>
             </tr>
           {% endfor %}
         </table>

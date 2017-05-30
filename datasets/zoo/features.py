@@ -11,7 +11,7 @@ FEATURES = [
     ("Is it a predator?", YES_NO),
     ("Does it have teeth?", YES_NO),
     ("Does it have a backbone?", YES_NO),
-    ("Does it breathe?", YES_NO),
+    ("Does it breathe air?", YES_NO),
     ("Is it venomous?", YES_NO),
     ("Does it have fins?", YES_NO),
     ("Does it have {} legs?",
