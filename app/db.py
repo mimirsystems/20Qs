@@ -2,8 +2,10 @@
     Set up tables and query functions
 """
 import datetime
-from sqlalchemy import func, desc, asc
+from sqlalchemy import func, desc, asc, exc
 from .server import db, cached
+
+ANSWERS = ['Yes', 'No', 'Unsure']
 
 class Entry(db.Model):
     """
@@ -213,7 +215,25 @@ def add_answer(question, answer_txt, animal, batch=False):
 
 @cached(key='all/{0.__name__}')
 def get_all(class_ob):
-    return set(class_ob.query.all())
+    try:
+        return set(class_ob.query.all())
+    except exc.OperationalError as error:
+        print("SQLALCHEMY ERROR: ", error)
+    return set()
+
+
+@cached(key='responses/{animal}/{question}')
+def query_responses(animal=None, question=None):
+    try:
+        entries = Entry.query\
+                .filter(Entry.animal.has(name=animal))\
+                .filter(Entry.question.has(question=question))
+        responses = [ent.answer for ent in entries.all()] + ANSWERS
+        responses = {resp:responses.count(resp) for resp in responses}
+        return responses
+    except exc.OperationalError as error:
+        print("SQLALCHEMY ERROR: ", error)
+
 
 def game_stats():
     """ Get some stats about the game """
