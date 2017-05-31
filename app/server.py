@@ -12,7 +12,6 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 
 # Base config
-DEFAULT_CACHE = 60*5
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:////tmp/20qs.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 MEMCACHE_SERVERS = os.environ.get('MEMCACHEDCLOUD_SERVERS')
@@ -69,7 +68,7 @@ def cached(key='view/{path}s'):
                 return value
             print("DB HIT: ", cache_key)
             value = func(*args, **kwargs)
-            cache.set(cache_key, value, DEFAULT_CACHE)
+            cache.set(cache_key, value)
             return value
         return decorated_function
     return decorator
