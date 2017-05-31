@@ -2,7 +2,7 @@
     defines a 20Qs bot
 """
 from math import log2
-from .db import ANSWERS, Question, Animal, add_game, log_game, get_all, query_all_responses
+from .db import ANSWERS, Question, Animal, add_game, log_game, get_all, query_all_responses, NO_RESPONSE
 
 NUM_QUESTIONS = 20
 
@@ -63,7 +63,7 @@ class QaBot(object):
             questions = [q for q in questions if q.question not in asked_txt]
 
         # filter / order and limit to get maximal split
-        animals = self.get_guesses()
+        animals = self.guesses
         for question in questions:
             split = get_entropy(question.question, animals)
             # print("Q: {}, Entropy: {:.2f}".format(question, split))
@@ -107,14 +107,18 @@ def get_entropy(question, animals):
 
     all_responses = query_all_responses(question, animals=animals)
     for animal in animals:
-        responses = sorted(
-            all_responses[animal.name].items(),
-            key=lambda resp: -resp[1]
-        )
-        (first, _) = responses[0]
-        (last, _) = responses[-1]
-        response_set[first] += animal.prob
-        response_set[last] += (1-animal.prob)
+        responses = all_responses.get(animal.name, NO_RESPONSE)
+        if responses is not None:
+            responses = sorted(
+                responses.items(),
+                key=lambda resp: -resp[1]
+            )
+            (first, _) = responses[0]
+            (last, _) = responses[-1]
+            response_set[first] += animal.prob
+            response_set[last] += (1-animal.prob)
+        else:
+            print("COULDN'T FIND ANIMAL \"{}\"".format(animal.name))
 
     total = sum(response_set.values())
     probs = [count/total for count in response_set.values()]
@@ -130,7 +134,7 @@ def adjust_guesses(animals, question, answer, weighting=1):
 
     all_responses = query_all_responses(question, animals=animals)
     for animal in animals:
-        responses = all_responses[animal.name]
+        responses = all_responses.get(animal.name, NO_RESPONSE)
         animal.prob *= pow(responses[answer] / sum(responses.values()), weighting)
 
     total_plays = sum([animal.prob for animal in animals])

@@ -6,6 +6,7 @@ from sqlalchemy import func, desc, asc, exc
 from .server import db, cached
 
 ANSWERS = ['Yes', 'No', 'Unsure']
+NO_RESPONSE = {answer:1 for answer in ANSWERS} # laplace smoothing
 
 class Entry(db.Model):
     """
@@ -222,41 +223,38 @@ def get_all(class_ob):
     return set()
 
 @cached(key='all_responses/{}')
-def query_all_responses(question, animals=None): #animals list here is hopefully precomupted
-    """ Get all the responses as counts for a question (for every animal) """
+def query_all_responses(question, animals=None):
+    """
+    Finds the counts of all responses for all animals for a particular question
+
+    Optionally takes an animals list if only interested in a subset
+    or it the list of all animals has been precomputed
+    """
     try:
-        entries = Entry.query.filter(Entry.question.has(question=question))
-        if animals is None:
-            animals = get_all(Animal) # cached
+        animals = get_all(Animal)
+        animals = {animal.id: animal for animal in animals}
+
+        entries = db.session\
+                .query(
+                    Entry.animal_id,
+                    Entry.answer,
+                    func.count()
+                ).filter(
+                    Entry.question.has(question=question)
+                ).group_by(Entry.animal_id, Entry.answer)
 
         responses = {}
-        for animal in animals:
-            animal_entries = entries.filter(Entry.animal.has(name=animal.name))
-            responses[animal.name] = {}
-            for answer in ANSWERS:
-                count = animal_entries.filter(Entry.answer == answer).count()
-                responses[animal.name][answer] = count+1 # laplace smoothing
+        for (animal, answer, count) in entries.all():
+            animal = animals.get(animal)
+            if animal is not None:
+                name = animal.name
+                if name not in responses:
+                    responses[name] = NO_RESPONSE
+                responses[name][answer] += count
         return responses
     except exc.OperationalError as error:
         print("SQLALCHEMY ERROR: ", error)
     return {}
-
-
-@cached(key='responses/{animal}/{question}')
-def query_responses(animal=None, question=None):
-    try:
-        entries = Entry.query\
-                .filter(Entry.animal.has(name=animal))\
-                .filter(Entry.question.has(question=question))
-        responses = {}
-        for answer in ANSWERS:
-            count = entries.filter(Entry.answer == answer).count()
-            responses[answer] = count+1 # laplace smoothing
-
-        return responses
-    except exc.OperationalError as error:
-        print("SQLALCHEMY ERROR: ", error)
-
 
 def game_stats():
     """ Get some stats about the game """
