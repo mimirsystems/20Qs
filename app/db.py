@@ -221,6 +221,26 @@ def get_all(class_ob):
         print("SQLALCHEMY ERROR: ", error)
     return set()
 
+@cached(key='all_responses/{}')
+def query_all_responses(question, animals=None): #animals list here is hopefully precomupted
+    """ Get all the responses as counts for a question (for every animal) """
+    try:
+        entries = Entry.query.filter(Entry.question.has(question=question))
+        if animals is None:
+            animals = get_all(Animal) # cached
+
+        responses = {}
+        for animal in animals:
+            animal_entries = entries.filter(Entry.animal.has(name=animal.name))
+            responses[animal.name] = {}
+            for answer in ANSWERS:
+                count = animal_entries.filter(Entry.answer == answer).count()
+                responses[animal.name][answer] = count+1 # laplace smoothing
+        return responses
+    except exc.OperationalError as error:
+        print("SQLALCHEMY ERROR: ", error)
+    return {}
+
 
 @cached(key='responses/{animal}/{question}')
 def query_responses(animal=None, question=None):
@@ -228,8 +248,11 @@ def query_responses(animal=None, question=None):
         entries = Entry.query\
                 .filter(Entry.animal.has(name=animal))\
                 .filter(Entry.question.has(question=question))
-        responses = [ent.answer for ent in entries.all()] + ANSWERS
-        responses = {resp:responses.count(resp) for resp in responses}
+        responses = {}
+        for answer in ANSWERS:
+            count = entries.filter(Entry.answer == answer).count()
+            responses[answer] = count+1 # laplace smoothing
+
         return responses
     except exc.OperationalError as error:
         print("SQLALCHEMY ERROR: ", error)

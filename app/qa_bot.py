@@ -2,10 +2,9 @@
     defines a 20Qs bot
 """
 from math import log2
-from .db import ANSWERS, Question, Animal, add_game, log_game, get_all, query_responses
+from .db import ANSWERS, Question, Animal, add_game, log_game, get_all, query_all_responses
 
 NUM_QUESTIONS = 20
-SOLUTIONS_TO_CONSIDER = 15
 
 class QaBot(object):
     """
@@ -52,7 +51,7 @@ class QaBot(object):
 
         self.guesses = list(self.guesses)
         for question, answer in self.questions:
-            self.guesses = adjust_guesses(self.guesses, question, answer)
+            self.guesses = adjust_guesses(self.guesses, question.question, answer)
         return self.guesses
 
     def get_question(self):
@@ -64,9 +63,9 @@ class QaBot(object):
             questions = [q for q in questions if q.question not in asked_txt]
 
         # filter / order and limit to get maximal split
-        animals = self.get_guesses()[:SOLUTIONS_TO_CONSIDER]
+        animals = self.get_guesses()
         for question in questions:
-            split = get_entropy(question, animals)
+            split = get_entropy(question.question, animals)
             # print("Q: {}, Entropy: {:.2f}".format(question, split))
             if best_q is None or split > best_q.entropy: # maximize entropy
                 best_q = question
@@ -106,11 +105,14 @@ def get_entropy(question, animals):
     """ Finds the entropy of the answers of a question for a set of animals """
     response_set = {answer:0.000001 for answer in ANSWERS}
 
+    all_responses = query_all_responses(question, animals=animals)
     for animal in animals:
-        responses = query_responses(animal=animal.name, question=question.question)
-        responses = sorted(responses.items(), key=lambda resp: -resp[1])
+        responses = sorted(
+            all_responses[animal.name].items(),
+            key=lambda resp: -resp[1]
+        )
         (first, _) = responses[0]
-        (last, _) = responses[0]
+        (last, _) = responses[-1]
         response_set[first] += animal.prob
         response_set[last] += (1-animal.prob)
 
@@ -125,8 +127,10 @@ def adjust_guesses(animals, question, answer, weighting=1):
     """
     Takes a set of guesses and applies a question's answer probability distribution
     """
+
+    all_responses = query_all_responses(question, animals=animals)
     for animal in animals:
-        responses = query_responses(animal=animal.name, question=question)
+        responses = all_responses[animal.name]
         animal.prob *= pow(responses[answer] / sum(responses.values()), weighting)
 
     total_plays = sum([animal.prob for animal in animals])

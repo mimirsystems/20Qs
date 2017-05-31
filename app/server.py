@@ -65,7 +65,9 @@ def cached(key='view/{path}s'):
             cache_key = key.format(*args, path=request.path, **kwargs)
             value = cache.get(cache_key)
             if value is not None:
+                print("CACHE HIT: ", cache_key)
                 return value
+            print("DB HIT: ", cache_key)
             value = func(*args, **kwargs)
             cache.set(cache_key, value, DEFAULT_CACHE)
             return value
