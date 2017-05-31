@@ -244,7 +244,7 @@ def get_all(class_ob):
         print("SQLALCHEMY ERROR: ", error)
     return []
 
-@cached(key='all_responses/{}')
+@cached(key='all_responses/{0}')
 def query_all_responses(question, animals=None):
     """
     Finds the counts of all responses for all animals for a particular question
@@ -253,8 +253,8 @@ def query_all_responses(question, animals=None):
     or it the list of all animals has been precomputed
     """
     try:
-        #if animals is None:
-        animals = get_all(Animal)
+        if animals is None:
+            animals = get_all(Animal)
         animals = {animal.id: animal for animal in animals}
 
         entries = Entry.query.filter(
