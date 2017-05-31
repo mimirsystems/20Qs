@@ -44,12 +44,8 @@ class QaBot(object):
         self.guesses = get_all(Animal)
         for animal in self.guesses:
             animal.prob = animal.count
-        total_plays = sum([animal.prob for animal in self.guesses])
-        for animal in self.guesses:
-            animal.prob /= total_plays
-        self.guesses = sorted(self.guesses, key=lambda animal: -animal.prob)
+        self.guesses = normalize_guesses(self.guesses)
 
-        self.guesses = list(self.guesses)
         for question, answer in self.questions:
             self.guesses = adjust_guesses(self.guesses, question.question, answer)
         return self.guesses
@@ -135,8 +131,13 @@ def adjust_guesses(animals, question, answer, weighting=1):
     all_responses = query_all_responses(question, animals=animals)
     for animal in animals:
         responses = all_responses.get(animal.name, NO_RESPONSE)
-        animal.prob *= pow(responses[answer] / sum(responses.values()), weighting)
+        update = pow(responses[answer] / sum(responses.values()), weighting)
+        animal.prob *= update
+        #if animal.name not in all_responses:
+            #print("NOT FOUND {}".format(animal.name))
+    return normalize_guesses(animals)
 
+def normalize_guesses(animals):
     total_plays = sum([animal.prob for animal in animals])
     if total_plays != 0:
         for animal in animals:

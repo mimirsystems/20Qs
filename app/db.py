@@ -37,7 +37,7 @@ class Entry(db.Model):
         question.increment_count()
         self.answer = answer
         self.time_created = datetime.datetime.now()
-        if animal != None:
+        if animal is not None:
             self.animal = animal
             animal.increment_count()
 
@@ -51,6 +51,15 @@ class Entry(db.Model):
 
     def __repr__(self):
         return "Question: " + self.question.question + " Answer: " + self.answer
+
+    def __eq__(self, other):
+        if other is None:
+            return False
+        if not isinstance(other, Entry):
+            return False
+        return self.animal_id == other.animal_id\
+                and self.question_id == other.question_id\
+                and self.answer == other.answer
 
 
 class Question(db.Model):
@@ -95,6 +104,12 @@ class Question(db.Model):
     def __repr__(self):
         return self.question + "(Asked: " + str(self.count) + " times)"
 
+    def __eq__(self, other):
+        if other is None:
+            return False
+        if not isinstance(other, Question):
+            return False
+        return self.question == other.question
 
 class Animal(db.Model):
     """
@@ -131,6 +146,13 @@ class Animal(db.Model):
 
     def __repr__(self):
         return "{} (x{})".format(self.name, self.count)
+
+    def __eq__(self, other):
+        if other is None:
+            return False
+        if not isinstance(other, Animal):
+            return False
+        return self.name == other.name
 
 
 class GameResult(db.Model):
@@ -217,10 +239,10 @@ def add_answer(question, answer_txt, animal, batch=False):
 @cached(key='all/{0.__name__}')
 def get_all(class_ob):
     try:
-        return set(class_ob.query.all())
+        return class_ob.query.all()
     except exc.OperationalError as error:
         print("SQLALCHEMY ERROR: ", error)
-    return set()
+    return []
 
 @cached(key='all_responses/{}')
 def query_all_responses(question, animals=None):
@@ -231,27 +253,22 @@ def query_all_responses(question, animals=None):
     or it the list of all animals has been precomputed
     """
     try:
-        if animals is None:
-            animals = get_all(Animal)
+        #if animals is None:
+        animals = get_all(Animal)
         animals = {animal.id: animal for animal in animals}
 
-        entries = db.session\
-                .query(
-                    Entry.animal_id,
-                    Entry.answer,
-                    func.count()
-                ).filter(
-                    Entry.question.has(question=question)
-                ).group_by(Entry.animal_id, Entry.answer)
+        entries = Entry.query.filter(
+            Entry.question.has(question=question)
+            )
+        entries = entries.all() # way too much to ask here
 
         responses = {}
-        for (animal, answer, count) in entries.all():
-            animal = animals.get(animal)
-            if animal is not None:
-                name = animal.name
-                if name not in responses:
-                    responses[name] = NO_RESPONSE
-                responses[name][answer] += count
+        for entry in entries:
+            animal_name = entry.animal.name
+            if animal_name not in responses:
+                responses[animal_name] = dict(NO_RESPONSE) # set all to defaults
+            responses[animal_name][entry.answer] += 1
+
         return responses
     except exc.OperationalError as error:
         print("SQLALCHEMY ERROR: ", error)
