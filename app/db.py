@@ -231,7 +231,8 @@ def query_all_responses(question, animals=None):
     or it the list of all animals has been precomputed
     """
     try:
-        animals = get_all(Animal)
+        if animals is None:
+            animals = get_all(Animal)
         animals = {animal.id: animal for animal in animals}
 
         entries = db.session\
