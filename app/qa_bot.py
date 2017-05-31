@@ -63,7 +63,7 @@ class QaBot(object):
             questions = [q for q in questions if q.question not in asked_txt]
 
         # filter / order and limit to get maximal split
-        animals = self.guesses
+        animals = self.get_guesses()
         for question in questions:
             split = get_entropy(question.question, animals)
             # print("Q: {}, Entropy: {:.2f}".format(question, split))
