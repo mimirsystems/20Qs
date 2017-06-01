@@ -245,7 +245,7 @@ def get_all(class_ob):
     return []
 
 @cached(key='all_responses/{question}')
-def query_all_responses(question=question, animals=None):
+def query_all_responses(question=None, animals=None):
     """
     Finds the counts of all responses for all animals for a particular question
 
