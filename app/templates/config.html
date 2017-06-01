@@ -9,11 +9,12 @@
 
 {% block scripts %}
   {{ super() }}
+  {% include "tracking.html" %}
   <script>
     $( document ).ready(function(){
       $(".button-collapse").sideNav();
       set_guesses();
-    })
+    });
 
 function toggle_guesses() {
   localStorage.guesses = (localStorage.guesses == "closed") ?

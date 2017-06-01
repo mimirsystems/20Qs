@@ -1,13 +1,12 @@
 {% extends "config.html" %}
 {% from "macros.html" import input, a_an, plural, to_title, title_txt, nav_link, to_percent with context %}
-{% include "tracking.html" %}
-{% include "navbar.html" %}
 
 {% block title %}
-20 Questions
+  20 Questions
 {% endblock %}
 
 {% block content %}
+  {% include "navbar.html" %}
   <div class="container">
     <div>
       {% for msg in get_flashed_messages() %}
@@ -26,5 +25,5 @@
       </div>
     </div>
   </div>
-{% include "footer.html" %}
+  {% include "footer.html" %}
 {% endblock %}
