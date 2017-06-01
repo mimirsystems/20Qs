@@ -117,3 +117,8 @@ def suggest_a_question(question_txt):
         animal=animal.name,
         options=ANSWERS
     )
+
+@app.route('/debug/animals')
+@cached()
+def debug_animals_list():
+    return get_all(Animal)
