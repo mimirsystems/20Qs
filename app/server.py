@@ -22,6 +22,7 @@ MEMCACHE_PASSWORD = os.environ.get('MEMCACHEDCLOUD_PASSWORD')
 Material(app)
 CACHE_CONFIG = {}
 CACHE_CONFIG['CACHE_TYPE'] = 'simple'
+CACHE_CONFIG['CACHE_DEFAULT_TIMEOUT'] = 1*60*60 # an hour
 if MEMCACHE_USERNAME and MEMCACHE_PASSWORD and MEMCACHE_SERVERS:
     print("Connecting to Memcached")
     CACHE_CONFIG['CACHE_TYPE'] = 'app.flask_cache_backends.bmemcached'
@@ -61,15 +62,19 @@ def cached(key='view/{path}s'):
         """ Gets a cached value or calculates one """
         @wraps(func)
         def decorated_function(*args, **kwargs):
-            cache_key = key.format(*args, path=request.path, **kwargs)
-            cache_key = cache_key.replace(" ", "_").replace("?", "")
-            value = cache.get(cache_key)
+            ckey = cache_key(key, *args, **kwargs)
+            value = cache.get(ckey)
             if value is not None:
-                print("CACHE HIT: \"{}\"".format(cache_key))
+                print("CACHE HIT: \"{}\"".format(ckey))
                 return value
-            print("DB HIT: \"{}\"".format(cache_key))
+            print("DB HIT: \"{}\"".format(ckey))
             value = func(*args, **kwargs)
-            cache.set(cache_key, value)
+            cache.set(ckey, value)
             return value
         return decorated_function
     return decorator
+
+def cache_key(key, *args, **kwargs):
+    key = key.format(*args, path=request.path, **kwargs)
+    key = key.replace(" ", "_").replace("?", "")
+    return key

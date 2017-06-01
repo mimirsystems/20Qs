@@ -3,7 +3,7 @@
 """
 import datetime
 from sqlalchemy import func, desc, asc, exc
-from .server import db, cached
+from .server import db, cached, cache, cache_key
 
 ANSWERS = ['Yes', 'No', 'Unsure']
 NO_RESPONSE = {answer:1 for answer in ANSWERS} # laplace smoothing
@@ -208,6 +208,10 @@ def add_animal(animal_name, batch=False):
     if animal is None:
         animal = Animal(animal_name)
         db.session.add(animal)
+        animals = get_all(Animal)
+        animals.append(animal)
+        key = cache_key('all/Animal')
+        cache.set(key, animals)
     if not batch:
         db.session.commit()
     return animal
@@ -234,6 +238,12 @@ def add_answer(question, answer_txt, animal, batch=False):
     db.session.add(answer)
     if not batch:
         db.session.commit()
+        key = cache_key('all_responses/{question}', question=question.question)
+        responses = cache.get(key)
+        if animal.name not in responses:
+            responses[animal.name] = dict(NO_RESPONSE)
+        responses[animal.name][answer_txt] += 1
+        cache.set(key, responses)
     return answer
 
 @cached(key='all/{0.__name__}')
