@@ -7,7 +7,7 @@ from flask import render_template, session, request, url_for, redirect
 #, flash, Markup
 from .server import app, cached
 from .qa_bot import QaBot, ANSWERS
-from .db import add_question, add_answer, game_stats, Animal
+from .db import add_question, add_answer, game_stats, Animal, get_all
 
 def with_bot(func):
     @wraps(func)
