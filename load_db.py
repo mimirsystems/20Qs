@@ -16,8 +16,8 @@ def main():
     db.session.commit()
 
     print("Check that something went in!")
-    print(get_all(Animal))
-    print(get_all(Question))
+    print(Animal.query.all())
+    print(Question.query.all())
 
 if __name__ == '__main__':
     db.create_all()
