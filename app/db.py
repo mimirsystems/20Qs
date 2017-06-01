@@ -244,8 +244,8 @@ def get_all(class_ob):
         print("SQLALCHEMY ERROR: ", error)
     return []
 
-@cached(key='all_responses/{0}')
-def query_all_responses(question, animals=None):
+@cached(key='all_responses/{question}')
+def query_all_responses(question=question, animals=None):
     """
     Finds the counts of all responses for all animals for a particular question
 

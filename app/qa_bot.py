@@ -101,7 +101,7 @@ def get_entropy(question, animals):
     """ Finds the entropy of the answers of a question for a set of animals """
     response_set = {answer:0.000001 for answer in ANSWERS}
 
-    all_responses = query_all_responses(question, animals=animals)
+    all_responses = query_all_responses(question=question, animals=animals)
     for animal in animals:
         responses = all_responses.get(animal.name, NO_RESPONSE)
         if responses is not None:
@@ -128,7 +128,7 @@ def adjust_guesses(animals, question, answer, weighting=1):
     Takes a set of guesses and applies a question's answer probability distribution
     """
 
-    all_responses = query_all_responses(question, animals=animals)
+    all_responses = query_all_responses(question=question, animals=animals)
     for animal in animals:
         responses = all_responses.get(animal.name, NO_RESPONSE)
         update = pow(responses[answer] / sum(responses.values()), weighting)
