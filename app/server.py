@@ -62,6 +62,7 @@ def cached(key='view/{path}s'):
         @wraps(func)
         def decorated_function(*args, **kwargs):
             cache_key = key.format(*args, path=request.path, **kwargs)
+            cache_key = cache_key.replace(" ", "_").replace("?", "")
             value = cache.get(cache_key)
             if value is not None:
                 print("CACHE HIT: \"{}\"".format(cache_key))
