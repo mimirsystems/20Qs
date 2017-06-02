@@ -1,27 +1,33 @@
-from flask.sessions import SessionInterface, SessionMixin
 import os
+from flask.sessions import SessionInterface, SessionMixin
 
-class SessionData(dict, SessionMixin): pass
+class SessionData(dict, SessionMixin):
+    pass
 
 class Session(SessionInterface):
     session_class = SessionData
+
+    def __init__(self):
+        self.session_new = False
+        self.cookie_session_id = None
+        self.memcache_session_id = None
 
     def open_session(self, app, request):
         self.cookie_session_id = request.cookies.get(app.session_cookie_name, None)
         self.session_new = False
         if self.cookie_session_id is None:
-            self.cookie_session_id = os.urandom(40).encode('hex')
+            self.cookie_session_id = os.urandom(40)
             self.session_new = True
-        self.memcache_session_id = '@'.join(
-                    [
-                        request.remote_addr,
-                        self.cookie_session_id
-                    ]
-                )
-        app.logger.debug('Open session %s', self.memcache_session_id)
-        session = app.cache.get(self.memcache_session_id) or {}
-        app.cache.set(self.memcache_session_id, session)
-        return self.session_class(session)
+            self.memcache_session_id = '@'.join(
+                [
+                    request.remote_addr,
+                    self.cookie_session_id
+                ]
+            )
+            app.logger.debug('Open session %s', self.memcache_session_id)
+            session = app.cache.get(self.memcache_session_id) or {}
+            app.cache.set(self.memcache_session_id, session)
+            return self.session_class(session)
 
     def save_session(self, app, session, response):
         expires = self.get_expiration_time(app, session)
