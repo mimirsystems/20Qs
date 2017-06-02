@@ -7,7 +7,7 @@ from flask import Flask, request
 from flask_cache import Cache
 from flask_material import Material
 from flask_sqlalchemy import SQLAlchemy
-from flask_memcache_session.session import Session
+from flask_memcache_session import Session
 
 
 app = Flask(__name__)

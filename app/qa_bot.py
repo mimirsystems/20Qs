@@ -51,7 +51,7 @@ class QaBot(object):
         self.guesses = normalize_guesses(self.guesses)
 
         for question, answer in self.questions:
-            self.guesses = adjust_guesses(self.guesses, question.question, answer)
+            self.guesses = adjust_guesses(self.guesses, question, answer)
         return self.guesses
 
     def get_question(self):
