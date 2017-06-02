@@ -1,7 +1,11 @@
 """
     defines a 20Qs bot
 """
-from math import log2
+try:
+    from math import log2
+except:
+    from math import log
+    log2 = lambda x: log(x, 2)
 from .db import ANSWERS, Question, Animal, add_game, log_game, get_all, query_all_responses, NO_RESPONSE
 
 NUM_QUESTIONS = 20

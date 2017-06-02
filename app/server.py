@@ -7,16 +7,24 @@ from flask import Flask, request
 from flask_cache import Cache
 from flask_material import Material
 from flask_sqlalchemy import SQLAlchemy
+from flask_memcache_session.session import Session
 
 
 app = Flask(__name__)
 
+# Caching config
+MEMCACHE_SERVERS = os.environ.get('MEMCACHEDCLOUD_SERVERS', '').split(';')
+MEMCACHE_USERNAME = os.environ.get('MEMCACHEDCLOUD_USERNAME')
+MEMCACHE_PASSWORD = os.environ.get('MEMCACHEDCLOUD_PASSWORD')
+
+if MEMCACHE_SERVERS != []:
+    app.config['SESSION_TYPE'] = 'memcached'
+    app.config['SESSION_MEMCACHED'] = MEMCACHE_SERVERS[0]
+    app.config['SESSION_KEY_PREFIX'] = 'session/'
+
 # Base config
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:////tmp/20qs.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-MEMCACHE_SERVERS = os.environ.get('MEMCACHEDCLOUD_SERVERS')
-MEMCACHE_USERNAME = os.environ.get('MEMCACHEDCLOUD_USERNAME')
-MEMCACHE_PASSWORD = os.environ.get('MEMCACHEDCLOUD_PASSWORD')
 
 # Extensions
 Material(app)
@@ -28,8 +36,11 @@ if MEMCACHE_USERNAME and MEMCACHE_PASSWORD and MEMCACHE_SERVERS:
     CACHE_CONFIG['CACHE_TYPE'] = 'app.flask_cache_backends.bmemcached'
     CACHE_CONFIG['CACHE_MEMCACHED_USERNAME'] = MEMCACHE_USERNAME
     CACHE_CONFIG['CACHE_MEMCACHED_PASSWORD'] = MEMCACHE_PASSWORD
-    CACHE_CONFIG['CACHE_MEMCACHED_SERVERS'] = MEMCACHE_SERVERS.split(';')
+    CACHE_CONFIG['CACHE_MEMCACHED_SERVERS'] = MEMCACHE_SERVERS
 cache = Cache(app, config=CACHE_CONFIG)
+app.cache = cache
+# Sessions
+app.session_interface = Session()
 # Database
 db = SQLAlchemy(app)
 db.create_all()
