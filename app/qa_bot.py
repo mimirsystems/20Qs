@@ -3,10 +3,11 @@
 """
 try:
     from math import log2
-except:
+except ImportError:
     from math import log
     log2 = lambda x: log(x, 2)
-from .db import ANSWERS, Question, Animal, add_game, log_game, get_all, query_all_responses, NO_RESPONSE
+from .db import ANSWERS, Question, Animal, add_game, log_game,\
+     get_all, query_all_responses, NO_RESPONSE
 
 NUM_QUESTIONS = 20
 
@@ -77,6 +78,7 @@ class QaBot(object):
         return (best_q, ANSWERS)
 
     def give_answer(self, question, answer):
+        print("Q: \"{}\", A: \"{}\"".format(question, answer))
         if question and answer:
             self.questions.append((question, answer))
             self.guesses = adjust_guesses(self.get_guesses(), question, answer)
