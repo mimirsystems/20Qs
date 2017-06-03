@@ -32,6 +32,8 @@ class QaBot(object):
                         self.guesses.append(animal)
                 except ValueError:
                     print("CORRUPTED")
+            else:
+                print("GUESSES NOT SAVED")
 
     def serialize(self):
         out = {'questions': self.questions}
@@ -68,7 +70,6 @@ class QaBot(object):
         animals = self.get_guesses()
         for question in questions:
             split = get_entropy(question.question, animals)
-            # print("Q: {}, Entropy: {:.2f}".format(question, split))
             if best_q is None or split > best_q.entropy: # maximize entropy
                 best_q = question
                 best_q.entropy = split
@@ -140,8 +141,6 @@ def adjust_guesses(animals, question, answer, weighting=1):
         responses = all_responses.get(animal.name, NO_RESPONSE)
         update = pow(responses[answer] / sum(responses.values()), weighting)
         animal.prob *= update
-        #if animal.name not in all_responses:
-            #print("NOT FOUND {}".format(animal.name))
     return normalize_guesses(animals)
 
 def normalize_guesses(animals):

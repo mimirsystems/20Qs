@@ -191,10 +191,10 @@ class GameResult(db.Model):
 
 
 def log_game(solution, guesses):
-    if solution.strip() != "":
+    if solution.strip() != "" and guesses is not None:
         solution = add_animal(solution).name
-        print(guesses[0])
         print(guesses)
+        print(guesses[0])
         guess = guesses[0].name
         log = GameResult(solution, guess)
         db.session.add(log)
