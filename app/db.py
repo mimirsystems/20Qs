@@ -285,10 +285,11 @@ def query_all_responses(question=None, animals=None):
 
         responses = {}
         for entry in entries:
-            animal_name = entry.animal.name
-            if animal_name not in responses:
-                responses[animal_name] = dict(NO_RESPONSE) # set all to defaults
-            responses[animal_name][entry.answer] += 1
+            if entry.animal is not None:
+                animal_name = entry.animal.name
+                if animal_name not in responses:
+                    responses[animal_name] = dict(NO_RESPONSE) # set all to defaults
+                responses[animal_name][entry.answer] += 1
 
         return responses
     except exc.OperationalError as error:
