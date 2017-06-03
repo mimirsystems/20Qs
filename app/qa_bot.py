@@ -48,7 +48,8 @@ class QaBot(object):
         print("RECALCULATING GUESSES")
         self.guesses = get_all(Animal)
         for animal in self.guesses:
-            animal.prob = animal.count
+            animal.prob = 1
+            # to consider how often animals are guessed use animal.count
         self.guesses = normalize_guesses(self.guesses)
 
         for question, answer in self.questions:
