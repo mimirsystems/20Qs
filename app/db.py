@@ -301,9 +301,9 @@ def game_stats():
     losses = GameResult.query.filter(GameResult.win.is_(False)).count()
     top_solutions = db.session.query(
         func.count(GameResult.solution).label('qty'),
-        GameResult.solution).group_by(GameResult.solution).order_by(desc('qty')).limit(5).all()
+        GameResult.solution).filter_by(GameResult.solution != '').group_by(GameResult.solution).order_by(desc('qty')).limit(5).all()
     bot_solutions = db.session.query(
         func.count(GameResult.solution).label('qty'),
-        GameResult.solution).group_by(GameResult.solution).order_by(asc('qty')).limit(5).all()
+        GameResult.solution).filter_by(GameResult.solution != '').group_by(GameResult.solution).order_by(asc('qty')).limit(5).all()
 
     return wins, losses, top_solutions, bot_solutions
