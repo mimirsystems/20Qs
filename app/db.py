@@ -295,15 +295,17 @@ def query_all_responses(question=None, animals=None):
         print("SQLALCHEMY ERROR: ", error)
     return {}
 
+def game_solutions(order):
+    return db.session.query(
+        func.count(GameResult.solution).label('qty'),
+        GameResult.solution).filter(GameResult.solution != '')\
+            .group_by(GameResult.solution)\
+            .order_by(order('qty'))
+
 def game_stats():
     """ Get some stats about the game """
     wins = GameResult.query.filter(GameResult.win.is_(True)).count()
     losses = GameResult.query.filter(GameResult.win.is_(False)).count()
-    top_solutions = db.session.query(
-        func.count(GameResult.solution).label('qty'),
-        GameResult.solution).filter_by(GameResult.solution != '').group_by(GameResult.solution).order_by(desc('qty')).limit(5).all()
-    bot_solutions = db.session.query(
-        func.count(GameResult.solution).label('qty'),
-        GameResult.solution).filter_by(GameResult.solution != '').group_by(GameResult.solution).order_by(asc('qty')).limit(5).all()
-
+    top_solutions = game_solutions(desc).limit(5).all()
+    bot_solutions = game_solutions(asc).limit(5).all()
     return wins, losses, top_solutions, bot_solutions
