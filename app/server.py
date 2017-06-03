@@ -15,16 +15,16 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'wetriedIguess')
 app.config['SECRET_KEY'] = app.secret_key
 app.config['SESSION_TYPE'] = 'filesystem'
+app.config['SESSION_KEY_PREFIX'] = 'session/'
 
 # Caching config
 MEMCACHE_SERVERS = os.environ.get('MEMCACHEDCLOUD_SERVERS', '').split(';')
 MEMCACHE_USERNAME = os.environ.get('MEMCACHEDCLOUD_USERNAME')
 MEMCACHE_PASSWORD = os.environ.get('MEMCACHEDCLOUD_PASSWORD')
 
-#if MEMCACHE_SERVERS != []:
-    #app.config['SESSION_TYPE'] = 'memcached'
-    #app.config['SESSION_MEMCACHED'] = MEMCACHE_SERVERS[0]
-    #app.config['SESSION_KEY_PREFIX'] = 'session/'
+if MEMCACHE_SERVERS != []:
+    app.config['SESSION_TYPE'] = 'memcached'
+    app.config['SESSION_MEMCACHED'] = MEMCACHE_SERVERS[0]
 
 # Base config
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:////tmp/20qs.db')

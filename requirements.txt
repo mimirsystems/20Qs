@@ -3,6 +3,7 @@ appnope==0.1.0
 astroid==1.5.2
 click==6.7
 decorator==4.0.11
+fire==0.1.1
 Flask==0.12.2
 Flask-Cache==0.13.1
 Flask-Material==0.1.1
@@ -27,6 +28,7 @@ prompt-toolkit==1.0.14
 psycopg2==2.6.2
 ptyprocess==0.5.1
 Pygments==2.2.0
+pylibmc==1.5.2
 pylint==1.7.1
 pyparsing==2.2.0
 python-binary-memcached==0.26.0
