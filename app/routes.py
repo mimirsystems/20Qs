@@ -29,14 +29,7 @@ def with_bot(func):
 @app.route('/about')
 @cached()
 def about():
-    wins, losses, top_solutions, bot_solutions = game_stats()
-    return render_template(
-        'about.html',
-        wins=wins,
-        losses=losses,
-        top_solutions=top_solutions,
-        bot_solutions=bot_solutions
-    )
+    return render_template('about.html', **game_stats())
 
 @app.route('/')
 @with_bot

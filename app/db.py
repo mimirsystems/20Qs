@@ -310,10 +310,33 @@ def game_solutions(order):
             .group_by(GameResult.solution)\
             .order_by(order('qty'))
 
+def guessed(win=False, num=5):
+    if win:
+        win = 1
+    else:
+        win = 0
+    return db.session.query(
+        GameResult.solution,
+        GameResult.guess,
+        func.count()
+    ).group_by(
+        GameResult.solution,
+        GameResult.guess
+    ).filter(GameResult.win == win).order_by(
+        desc(func.count())
+    ).limit(num).all()
+
 def game_stats():
     """ Get some stats about the game """
-    wins = GameResult.query.filter(GameResult.win.is_(True)).count()
-    losses = GameResult.query.filter(GameResult.win.is_(False)).count()
-    top_solutions = game_solutions(desc).limit(5).all()
-    bot_solutions = game_solutions(asc).limit(5).all()
-    return wins, losses, top_solutions, bot_solutions
+    animals = get_all(Animal)
+    questions = get_all(Question)
+    return {
+        'wins': GameResult.query.filter(GameResult.win.is_(True)).count(),
+        'losses': GameResult.query.filter(GameResult.win.is_(False)).count(),
+        'top_solutions': game_solutions(desc).limit(5).all(),
+        'bot_solutions': game_solutions(asc).limit(5).all(),
+        'num_animals': len(animals),
+        'num_questions': len(questions),
+        'guessed_wrong': guessed(win=False),
+        'guessed_right': guessed(win=True)
+    }
