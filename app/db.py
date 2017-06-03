@@ -61,6 +61,8 @@ class Entry(db.Model):
                 and self.question_id == other.question_id\
                 and self.answer == other.answer
 
+    def __hash__(self):
+        return hash(self.question_id, self.animal_id, self.answer)
 
 class Question(db.Model):
     """
@@ -111,6 +113,9 @@ class Question(db.Model):
             return False
         return self.question == other.question
 
+    def __hash__(self):
+        return hash(self.question)
+
 class Animal(db.Model):
     """
     This class stores information of a question that was asked and the number of times it was asked
@@ -154,6 +159,9 @@ class Animal(db.Model):
             return False
         return self.name == other.name
 
+    def __hash__(self):
+        return hash(self.name)
+
 
 class GameResult(db.Model):
     """
@@ -183,8 +191,8 @@ class GameResult(db.Model):
 
 
 def log_game(solution, guesses):
-    solution = add_animal(solution).name
-    if name.strip() != "":
+    if solution.strip() != "":
+        solution = add_animal(solution).name
         guess = guesses[0].name
         log = GameResult(solution, guess)
         db.session.add(log)
