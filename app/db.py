@@ -151,7 +151,7 @@ class Animal(db.Model):
 
     def __repr__(self):
         if 'prob' in self.__dict__:
-            return "'{}' (P{})".format(self.name, self.prob)
+            return "'{}' (P{:.2f})".format(self.name, self.prob)
         return "'{}'".format(self.name)
 
     def __eq__(self, other):
