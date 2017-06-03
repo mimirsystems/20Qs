@@ -62,7 +62,7 @@ class Entry(db.Model):
                 and self.answer == other.answer
 
     def __hash__(self):
-        return hash(self.question_id, self.animal_id, self.answer)
+        return hash((self.question_id, self.animal_id, self.answer))
 
 class Question(db.Model):
     """
