@@ -312,9 +312,9 @@ def game_solutions(order):
 
 def guessed(win=False, num=5):
     if win:
-        win = 1
+        win = 'TRUE'
     else:
-        win = 0
+        win = 'FALSE'
     return db.session.query(
         GameResult.solution,
         GameResult.guess,
