@@ -43,6 +43,7 @@ cache = Cache(app, config=CACHE_CONFIG)
 app.cache = cache
 # Sessions
 app.session_interface = Session()
+app.session_interface.init_app(app)
 # Database
 db = SQLAlchemy(app)
 db.create_all()

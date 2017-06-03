@@ -14,7 +14,6 @@ def get_watches():
 
 # Config
 WATCH = ['app/templates', 'app/static']
-app.config['SECRET_KEY'] = 'loljk'
 app.config['PORT'] = 8000
 app.config['DEBUG'] = True
 
