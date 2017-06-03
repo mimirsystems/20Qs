@@ -135,3 +135,9 @@ def train(question_txt):
 def debug_animals_list():
     animals = get_all(Animal)
     return str(animals)
+
+@app.route('/debug/questions')
+@cached()
+def debug_animals_list():
+    questions = get_all(Question)
+    return str(questions)
