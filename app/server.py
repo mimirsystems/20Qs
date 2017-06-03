@@ -21,10 +21,10 @@ MEMCACHE_SERVERS = os.environ.get('MEMCACHEDCLOUD_SERVERS', '').split(';')
 MEMCACHE_USERNAME = os.environ.get('MEMCACHEDCLOUD_USERNAME')
 MEMCACHE_PASSWORD = os.environ.get('MEMCACHEDCLOUD_PASSWORD')
 
-if MEMCACHE_SERVERS != []:
-    app.config['SESSION_TYPE'] = 'memcached'
-    app.config['SESSION_MEMCACHED'] = MEMCACHE_SERVERS[0]
-    app.config['SESSION_KEY_PREFIX'] = 'session/'
+#if MEMCACHE_SERVERS != []:
+    #app.config['SESSION_TYPE'] = 'memcached'
+    #app.config['SESSION_MEMCACHED'] = MEMCACHE_SERVERS[0]
+    #app.config['SESSION_KEY_PREFIX'] = 'session/'
 
 # Base config
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:////tmp/20qs.db')
@@ -44,7 +44,7 @@ if MEMCACHE_USERNAME and MEMCACHE_PASSWORD and MEMCACHE_SERVERS:
 cache = Cache(app, config=CACHE_CONFIG)
 app.cache = cache
 # Sessions
-print(app.config)
+#print(app.config)
 Session()
 # Database
 db = SQLAlchemy(app)
