@@ -19,7 +19,7 @@ class Entry(db.Model):
     """
     __tablename__ = 'entries'
     id = db.Column(db.Integer, primary_key=True)
-    answer = db.Column(db.String(30))
+    answer = db.Column(db.String(10), nullable=False)
     time_created = db.Column(db.TIMESTAMP, server_default=db.func.now())
     question_id = db.Column(db.Integer, db.ForeignKey('questions.id'))
     animal_id = db.Column(db.Integer, db.ForeignKey('animals.id'))
@@ -73,7 +73,7 @@ class Question(db.Model):
     """
     __tablename__ = 'questions'
     id = db.Column(db.Integer, primary_key=True)
-    question = db.Column(db.String(200))
+    question = db.Column(db.String(80), nullable=False)
     count = db.Column(db.Integer)
     __table_args__ = (db.UniqueConstraint('question'), )
 
@@ -125,7 +125,7 @@ class Animal(db.Model):
     """
     __tablename__ = 'animals'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(200))
+    name = db.Column(db.String(30), nullable=False)
     count = db.Column(db.Integer)
     __table_args__ = (db.UniqueConstraint('name'), )
 
@@ -178,8 +178,8 @@ class GameResult(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     time_created = db.Column(db.TIMESTAMP, server_default=db.func.now())
     win = db.Column(db.Boolean())
-    solution = db.Column(db.String(30))
-    guess = db.Column(db.String(30))
+    solution = db.Column(db.String(30), nullable=False)
+    guess = db.Column(db.String(30), nullable=False)
 
     def __init__(self, solution, guess):
         self.win = (solution == guess)
@@ -218,18 +218,19 @@ def add_game(animal_name, questions, batch=False):
 def add_animal(animal_name, batch=False):
     """ Add an animal if not already found, then return it """
     animal_name = animal_name.lower().strip()
-    if animal_name != "":
-        animal = Animal.query.filter(Animal.name == animal_name).first()
-        if animal is None:
-            animal = Animal(animal_name)
-            db.session.add(animal)
-            animals = get_all(Animal)
-            animals.append(animal)
-            key = cache_key('all/Animal')
-            cache.set(key, animals)
-        if not batch:
-            db.session.commit()
-        return animal
+    if len(animal_name) < 3 or len(animal_name) > 30:
+        return
+    animal = Animal.query.filter(Animal.name == animal_name).first()
+    if animal is None:
+        animal = Animal(animal_name)
+        db.session.add(animal)
+        animals = get_all(Animal)
+        animals.append(animal)
+        key = cache_key('all/Animal')
+        cache.set(key, animals)
+    if not batch:
+        db.session.commit()
+    return animal
 
 def add_question(question_txt, batch=False):
     """ Add a question if not already found, then return it """
@@ -255,6 +256,8 @@ def add_answer(question, answer_txt, animal, batch=False):
         db.session.commit()
         key = cache_key('all_responses/{question}', question=question.question)
         responses = cache.get(key)
+        if responses is None:
+            responses = {}
         if animal.name not in responses:
             responses[animal.name] = dict(NO_RESPONSE)
         responses[animal.name][answer_txt] += 1

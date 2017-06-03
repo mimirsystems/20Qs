@@ -13,7 +13,24 @@
   <script>
     $( document ).ready(function(){
       $(".button-collapse").sideNav();
+
+      $('input.autocomplete').autocomplete({
+          data: {
+            {% for question in questions %}
+              "{{question.question}}": null,
+            {% endfor %}
+          },
+          limit: 20,
+          onAutocomplete: function(val) {
+            // Callback function when value is autcompleted.
+            console.log(val);
+          },
+        });
+
       set_guesses();
+      {% for msg in get_flashed_messages() %}
+        Materialize.toast('{{msg}}', 4000);
+      {% endfor %}
     });
 
 function toggle_guesses() {

@@ -8,15 +8,6 @@
 {% block content %}
   {% include "navbar.html" %}
   <div class="container">
-    <div>
-      {% for msg in get_flashed_messages() %}
-        <div class="card">
-          <div class="container">
-            {{msg}}
-          </div>
-        </div>
-      {% endfor %}
-    </div>
     <div class="card">
       <div class="container">
         {% block main %}

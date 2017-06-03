@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block main %}
+  <h3 class="center">Help train the bot</h4>
+  <form class="col s12" action="{{ url_for('train') }}" method="post">
+    <div class="row">
+      <div style="overflow: hidden; padding-right: .5em;">
+        <input id="autocomplete_question" placeholder="Your question" name="question" type="text" class="autocomplete"/>
+      </div>
+    </div>
+    <div class="row">
+      {% for animal in animals %}
+        <div class="row">
+        <div class="col">For {{to_title(animal)}}?</div>
+          {% for answer in answers %}
+            <div class="col right">
+              <input name="{{prefix}}{{animal}}" type="radio" id="{{prefix}}{{animal}}/{{answer}}" value="{{answer}}" />
+              <label for="{{prefix}}{{animal}}/{{answer}}">{{answer}}</label>
+            </div>
+          {% endfor %}
+        </div>
+      {% endfor %}
+    <div class="center">
+      <input type="submit" class="btn" value="Submit"/>
+    </div>
+    </div>
+  </form>
+{% endblock %}

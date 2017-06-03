@@ -46,7 +46,7 @@ db = SQLAlchemy(app)
 db.create_all()
 
 # Routing
-NAV_ROUTES = ["new_game", "about", "suggest_a_question"]
+NAV_ROUTES = ["new_game", "about", "train"]
 
 # Colours
 COLOURS = {
@@ -85,6 +85,8 @@ def cached(key='view{path}'):
     return decorator
 
 def cache_key(key, *args, **kwargs):
-    key = key.format(*args, path=request.path, **kwargs)
+    if '{path}' in key:
+        kwargs['path'] = request.path
+    key = key.format(*args, **kwargs)
     key = key.replace(" ", "_").replace("?", "")
     return key

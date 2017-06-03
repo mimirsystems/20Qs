@@ -1,13 +1,13 @@
 """
     Defines routes
 """
-import random
+from random import shuffle
 from os import urandom
 from functools import wraps
-from flask import render_template, request, url_for, redirect, session
+from flask import render_template, session, request, url_for, redirect, flash
 from .server import app, cached, cache
 from .qa_bot import QaBot, ANSWERS
-from .db import add_question, add_answer, game_stats, Animal, get_all
+from .db import add_question, add_animal, add_answer, game_stats, Animal, get_all
 
 def get_session_id():
     return ''.join('{:02x}'.format(x) for x in urandom(40))
@@ -95,36 +95,40 @@ def feedback(bot, solution):
     bot.finish_game(solution)
     return redirect(url_for('new_game'))
 
-@app.route('/suggest/', defaults={'question_txt': None}, methods=['GET', 'POST'])
-@app.route('/suggest/<question_txt>', methods=['GET', 'POST'])
-def suggest_a_question(question_txt):
+@app.route('/train/', defaults={'question_txt': None}, methods=['GET', 'POST'])
+@app.route('/train/<question_txt>', methods=['GET', 'POST'])
+def train(question_txt):
     """
     Takes suggestions for questions from the user
     """
+    prefix = "animal/"
     question_txt = request.form.get(
         'question',
         question_txt
     )
+    animals = [animal.name for animal in get_all(Animal)]
+    shuffle(animals)
+    animals = animals[:15]
+
     if question_txt is None:
         return render_template(
-            'suggest_question.html',
-            question=question_txt
+            'train.html',
+            question=question_txt,
+            animals=animals,
+            answers=ANSWERS,
+            prefix=prefix
         )
-
-    add_question(question_txt)
-    animal = request.form.get('animal')
-    answer_txt = request.form.get('answer')
-    if animal and answer_txt:
-        add_answer(question_txt, animal.name, answer_txt)
-
-    animal = random.choice(Animal.query.all()) # Get an animal that we don't have an answer for
-
-    return render_template(
-        'suggest_question_answer.html',
-        question=question_txt,
-        animal=animal.name,
-        options=ANSWERS
-    )
+    question_ob = add_question(question_txt)
+    for key, answer_txt in request.form.items():
+        if key[:len(prefix)] == prefix:
+            animal_name = key[len(prefix):]
+            animal = add_animal(animal_name)
+            print(animal, "::", answer_txt)
+            add_answer(question_ob, answer_txt, animal)
+        else:
+            print("Unexpected key: {}".format(key))
+    flash('Thank you for the help!')
+    return redirect(url_for('new_game'))
 
 @app.route('/debug/animals')
 @cached()
