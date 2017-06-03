@@ -95,20 +95,18 @@ def feedback(bot, solution):
     bot.finish_game(solution)
     return redirect(url_for('new_game'))
 
-@app.route('/train/', defaults={'question_txt': None}, methods=['GET', 'POST'])
-@app.route('/train/<question_txt>', methods=['GET', 'POST'])
-def train(question_txt):
+@app.route('/train/', defaults={'number': 15}, methods=['GET', 'POST'])
+@app.route('/train/<int:number>', methods=['GET', 'POST'])
+def train(number):
     """
     Takes suggestions for questions from the user
     """
     prefix = "animal/"
-    question_txt = request.form.get(
-        'question',
-        question_txt
-    )
+    question_txt = request.form.get('question')
     animals = [animal.name for animal in get_all(Animal)]
     shuffle(animals)
-    animals = animals[:15]
+    if number != 0:
+        animals = animals[:number]
 
     if question_txt is None:
         return render_template(
