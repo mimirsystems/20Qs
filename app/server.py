@@ -67,7 +67,7 @@ def template_global_variables():
     return globs
 
 # Caching any function
-def cached(key='view/{path}s'):
+def cached(key='view{path}'):
     """ Sets up a function to have cached results """
     def decorator(func):
         """ Gets a cached value or calculates one """
@@ -76,7 +76,6 @@ def cached(key='view/{path}s'):
             ckey = cache_key(key, *args, **kwargs)
             value = cache.get(ckey)
             if value is not None:
-                print("CACHE HIT: \"{}\"".format(ckey))
                 return value
             print("DB HIT: \"{}\"".format(ckey))
             value = func(*args, **kwargs)
