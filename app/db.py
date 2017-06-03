@@ -150,7 +150,9 @@ class Animal(db.Model):
         self.count += 1
 
     def __repr__(self):
-        return "{} (x{})".format(self.name, self.count)
+        if 'prob' in self.__dict__:
+            return "'{}' (P{})".format(self.name, self.prob)
+        return "'{}'".format(self.name)
 
     def __eq__(self, other):
         if other is None:
