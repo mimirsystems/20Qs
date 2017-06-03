@@ -136,6 +136,6 @@ def debug_animals_list():
 
 @app.route('/debug/questions')
 @cached()
-def debug_animals_list():
+def debug_questions_list():
     questions = get_all(Question)
     return str(questions)
