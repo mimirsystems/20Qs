@@ -97,7 +97,10 @@ def train(question_txt):
         'question',
         question_txt
     )
-    animals = shuffle([animal.name for animal in get_all(Animal)])[:15]
+    animals = [animal.name for animal in get_all(Animal)]
+    shuffle(animals)
+    animals = animals[:15]
+
     if question_txt is None:
         return render_template(
             'train.html',
