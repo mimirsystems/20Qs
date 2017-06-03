@@ -7,15 +7,12 @@ from flask import Flask, request
 from flask_cache import Cache
 from flask_material import Material
 from flask_sqlalchemy import SQLAlchemy
-from flask_session import Session
 
 
 app = Flask(__name__)
 
 app.secret_key = os.environ.get('SECRET_KEY', 'wetriedIguess')
 app.config['SECRET_KEY'] = app.secret_key
-app.config['SESSION_TYPE'] = 'filesystem'
-app.config['SESSION_KEY_PREFIX'] = 'session/'
 
 # Caching config
 MEMCACHE_SERVERS = os.environ.get('MEMCACHEDCLOUD_SERVERS', '').split(';')
@@ -43,9 +40,7 @@ if MEMCACHE_USERNAME and MEMCACHE_PASSWORD and MEMCACHE_SERVERS:
     CACHE_CONFIG['CACHE_MEMCACHED_SERVERS'] = MEMCACHE_SERVERS
 cache = Cache(app, config=CACHE_CONFIG)
 app.cache = cache
-# Sessions
-#print(app.config)
-Session()
+
 # Database
 db = SQLAlchemy(app)
 db.create_all()
