@@ -7,7 +7,7 @@ from functools import wraps
 from flask import render_template, session, request, url_for, redirect, flash
 from .server import app, cached, cache
 from .qa_bot import QaBot, ANSWERS
-from .db import add_question, add_animal, add_answer, game_stats, Animal, get_all
+from .db import add_question, add_animal, add_answer, game_stats, Question, Animal, get_all
 
 def get_session_id():
     return ''.join('{:02x}'.format(x) for x in urandom(40))
