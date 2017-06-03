@@ -16,7 +16,7 @@ class Session(SessionInterface):
         self.cookie_session_id = request.cookies.get(app.session_cookie_name, None)
         self.session_new = False
         if self.cookie_session_id is None:
-            self.cookie_session_id = ''.join(format(x, '02x') for x in os.urandom(40))
+            self.cookie_session_id = ''.join('{:02x}'.format(x) for x in os.urandom(40))
             self.session_new = True
             self.memcache_session_id = '@'.join(
                 [
