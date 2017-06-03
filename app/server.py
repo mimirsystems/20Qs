@@ -14,6 +14,7 @@ app = Flask(__name__)
 
 app.secret_key = os.environ.get('SECRET_KEY', 'wetriedIguess')
 app.config['SECRET_KEY'] = app.secret_key
+app.config['SESSION_TYPE'] = 'filesystem'
 
 # Caching config
 MEMCACHE_SERVERS = os.environ.get('MEMCACHEDCLOUD_SERVERS', '').split(';')
