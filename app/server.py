@@ -7,7 +7,7 @@ from flask import Flask, request
 from flask_cache import Cache
 from flask_material import Material
 from flask_sqlalchemy import SQLAlchemy
-from flask_memcache_session import Session
+from flask_session import Session
 
 
 app = Flask(__name__)
@@ -44,7 +44,7 @@ if MEMCACHE_USERNAME and MEMCACHE_PASSWORD and MEMCACHE_SERVERS:
 cache = Cache(app, config=CACHE_CONFIG)
 app.cache = cache
 # Sessions
-app.session_interface = Session()
+Session()
 # Database
 db = SQLAlchemy(app)
 db.create_all()
