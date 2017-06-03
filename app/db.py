@@ -184,10 +184,11 @@ class GameResult(db.Model):
 
 def log_game(solution, guesses):
     solution = add_animal(solution).name
-    guess = guesses[0].name
-    log = GameResult(solution, guess)
-    db.session.add(log)
-    db.session.commit()
+    if name.strip() != "":
+        guess = guesses[0].name
+        log = GameResult(solution, guess)
+        db.session.add(log)
+        db.session.commit()
 
 def add_game(animal_name, questions, batch=False):
     """
@@ -197,24 +198,26 @@ def add_game(animal_name, questions, batch=False):
         questions = questions.items()
 
     animal = add_animal(animal_name, batch=batch)
-    for question_txt, answer_txt in questions:
-        question = add_question(question_txt, batch=batch)
-        add_answer(question, answer_txt, animal, batch=batch)
+    if animal is not None:
+        for question_txt, answer_txt in questions:
+            question = add_question(question_txt, batch=batch)
+            add_answer(question, answer_txt, animal, batch=batch)
 
 def add_animal(animal_name, batch=False):
     """ Add an animal if not already found, then return it """
     animal_name = animal_name.lower().strip()
-    animal = Animal.query.filter(Animal.name == animal_name).first()
-    if animal is None:
-        animal = Animal(animal_name)
-        db.session.add(animal)
-        animals = get_all(Animal)
-        animals.append(animal)
-        key = cache_key('all/Animal')
-        cache.set(key, animals)
-    if not batch:
-        db.session.commit()
-    return animal
+    if animal_name != "":
+        animal = Animal.query.filter(Animal.name == animal_name).first()
+        if animal is None:
+            animal = Animal(animal_name)
+            db.session.add(animal)
+            animals = get_all(Animal)
+            animals.append(animal)
+            key = cache_key('all/Animal')
+            cache.set(key, animals)
+        if not batch:
+            db.session.commit()
+        return animal
 
 def add_question(question_txt, batch=False):
     """ Add a question if not already found, then return it """
