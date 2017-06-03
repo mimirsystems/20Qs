@@ -311,10 +311,6 @@ def game_solutions(order):
             .order_by(order('qty'))
 
 def guessed(win=False, num=5):
-    if win:
-        win = 'TRUE'
-    else:
-        win = 'FALSE'
     return db.session.query(
         GameResult.solution,
         GameResult.guess,
