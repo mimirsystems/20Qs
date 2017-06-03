@@ -193,6 +193,8 @@ class GameResult(db.Model):
 def log_game(solution, guesses):
     if solution.strip() != "":
         solution = add_animal(solution).name
+        print(guesses[0])
+        print(guesses)
         guess = guesses[0].name
         log = GameResult(solution, guess)
         db.session.add(log)
