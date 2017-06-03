@@ -44,6 +44,7 @@ if MEMCACHE_USERNAME and MEMCACHE_PASSWORD and MEMCACHE_SERVERS:
 cache = Cache(app, config=CACHE_CONFIG)
 app.cache = cache
 # Sessions
+print(app.config)
 Session()
 # Database
 db = SQLAlchemy(app)
