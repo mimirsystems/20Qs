@@ -12,7 +12,7 @@ from flask_memcache_session import Session
 
 app = Flask(__name__)
 
-app.secret_key = os.environ.get('SECRET_KEY', 'wetriedIguess')
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'wetriedIguess')
 
 # Caching config
 MEMCACHE_SERVERS = os.environ.get('MEMCACHEDCLOUD_SERVERS', '').split(';')
