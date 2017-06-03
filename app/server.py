@@ -11,12 +11,21 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 
+app.secret_key = os.environ.get('SECRET_KEY', 'wetriedIguess')
+app.config['SECRET_KEY'] = app.secret_key
+
+# Caching config
+MEMCACHE_SERVERS = os.environ.get('MEMCACHEDCLOUD_SERVERS', '').split(';')
+MEMCACHE_USERNAME = os.environ.get('MEMCACHEDCLOUD_USERNAME')
+MEMCACHE_PASSWORD = os.environ.get('MEMCACHEDCLOUD_PASSWORD')
+
+if MEMCACHE_SERVERS != []:
+    app.config['SESSION_TYPE'] = 'memcached'
+    app.config['SESSION_MEMCACHED'] = MEMCACHE_SERVERS[0]
+
 # Base config
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:////tmp/20qs.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-MEMCACHE_SERVERS = os.environ.get('MEMCACHEDCLOUD_SERVERS')
-MEMCACHE_USERNAME = os.environ.get('MEMCACHEDCLOUD_USERNAME')
-MEMCACHE_PASSWORD = os.environ.get('MEMCACHEDCLOUD_PASSWORD')
 
 # Extensions
 Material(app)
@@ -28,8 +37,10 @@ if MEMCACHE_USERNAME and MEMCACHE_PASSWORD and MEMCACHE_SERVERS:
     CACHE_CONFIG['CACHE_TYPE'] = 'app.flask_cache_backends.bmemcached'
     CACHE_CONFIG['CACHE_MEMCACHED_USERNAME'] = MEMCACHE_USERNAME
     CACHE_CONFIG['CACHE_MEMCACHED_PASSWORD'] = MEMCACHE_PASSWORD
-    CACHE_CONFIG['CACHE_MEMCACHED_SERVERS'] = MEMCACHE_SERVERS.split(';')
+    CACHE_CONFIG['CACHE_MEMCACHED_SERVERS'] = MEMCACHE_SERVERS
 cache = Cache(app, config=CACHE_CONFIG)
+app.cache = cache
+
 # Database
 db = SQLAlchemy(app)
 db.create_all()
@@ -56,7 +67,7 @@ def template_global_variables():
     return globs
 
 # Caching any function
-def cached(key='view/{path}s'):
+def cached(key='view{path}'):
     """ Sets up a function to have cached results """
     def decorator(func):
         """ Gets a cached value or calculates one """
@@ -65,7 +76,6 @@ def cached(key='view/{path}s'):
             ckey = cache_key(key, *args, **kwargs)
             value = cache.get(ckey)
             if value is not None:
-                print("CACHE HIT: \"{}\"".format(ckey))
                 return value
             print("DB HIT: \"{}\"".format(ckey))
             value = func(*args, **kwargs)

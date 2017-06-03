@@ -1,8 +1,13 @@
 """
     defines a 20Qs bot
 """
-from math import log2
-from .db import ANSWERS, Question, Animal, add_game, log_game, get_all, query_all_responses, NO_RESPONSE
+try:
+    from math import log2
+except ImportError:
+    from math import log
+    log2 = lambda x: log(x, 2)
+from .db import ANSWERS, Question, Animal, add_game, log_game,\
+     get_all, query_all_responses, NO_RESPONSE
 
 NUM_QUESTIONS = 20
 
@@ -27,6 +32,8 @@ class QaBot(object):
                         self.guesses.append(animal)
                 except ValueError:
                     print("CORRUPTED")
+            else:
+                print("GUESSES NOT SAVED")
 
     def serialize(self):
         out = {'questions': self.questions}
@@ -43,11 +50,12 @@ class QaBot(object):
         print("RECALCULATING GUESSES")
         self.guesses = get_all(Animal)
         for animal in self.guesses:
-            animal.prob = animal.count
+            animal.prob = 1
+            # to consider how often animals are guessed use animal.count
         self.guesses = normalize_guesses(self.guesses)
 
         for question, answer in self.questions:
-            self.guesses = adjust_guesses(self.guesses, question.question, answer)
+            self.guesses = adjust_guesses(self.guesses, question, answer)
         return self.guesses
 
     def get_question(self):
@@ -62,7 +70,6 @@ class QaBot(object):
         animals = self.get_guesses()
         for question in questions:
             split = get_entropy(question.question, animals)
-            # print("Q: {}, Entropy: {:.2f}".format(question, split))
             if best_q is None or split > best_q.entropy: # maximize entropy
                 best_q = question
                 best_q.entropy = split
@@ -73,6 +80,7 @@ class QaBot(object):
         return (best_q, ANSWERS)
 
     def give_answer(self, question, answer):
+        print("Q: \"{}\", A: \"{}\"".format(question, answer))
         if question and answer:
             self.questions.append((question, answer))
             self.guesses = adjust_guesses(self.get_guesses(), question, answer)
@@ -133,8 +141,6 @@ def adjust_guesses(animals, question, answer, weighting=1):
         responses = all_responses.get(animal.name, NO_RESPONSE)
         update = pow(responses[answer] / sum(responses.values()), weighting)
         animal.prob *= update
-        #if animal.name not in all_responses:
-            #print("NOT FOUND {}".format(animal.name))
     return normalize_guesses(animals)
 
 def normalize_guesses(animals):

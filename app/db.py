@@ -61,6 +61,8 @@ class Entry(db.Model):
                 and self.question_id == other.question_id\
                 and self.answer == other.answer
 
+    def __hash__(self):
+        return hash((self.question_id, self.animal_id, self.answer))
 
 class Question(db.Model):
     """
@@ -111,6 +113,9 @@ class Question(db.Model):
             return False
         return self.question == other.question
 
+    def __hash__(self):
+        return hash(self.question)
+
 class Animal(db.Model):
     """
     This class stores information of a question that was asked and the number of times it was asked
@@ -145,7 +150,9 @@ class Animal(db.Model):
         self.count += 1
 
     def __repr__(self):
-        return "{} (x{})".format(self.name, self.count)
+        if 'prob' in self.__dict__:
+            return "'{}' (P{:.2f})".format(self.name, self.prob)
+        return "'{}'".format(self.name)
 
     def __eq__(self, other):
         if other is None:
@@ -153,6 +160,9 @@ class Animal(db.Model):
         if not isinstance(other, Animal):
             return False
         return self.name == other.name
+
+    def __hash__(self):
+        return hash(self.name)
 
 
 class GameResult(db.Model):
@@ -183,11 +193,14 @@ class GameResult(db.Model):
 
 
 def log_game(solution, guesses):
-    solution = add_animal(solution).name
-    guess = guesses[0].name
-    log = GameResult(solution, guess)
-    db.session.add(log)
-    db.session.commit()
+    if solution.strip() != "" and guesses is not None:
+        solution = add_animal(solution).name
+        print(guesses)
+        print(guesses[0])
+        guess = guesses[0].name
+        log = GameResult(solution, guess)
+        db.session.add(log)
+        db.session.commit()
 
 def add_game(animal_name, questions, batch=False):
     """
@@ -197,9 +210,10 @@ def add_game(animal_name, questions, batch=False):
         questions = questions.items()
 
     animal = add_animal(animal_name, batch=batch)
-    for question_txt, answer_txt in questions:
-        question = add_question(question_txt, batch=batch)
-        add_answer(question, answer_txt, animal, batch=batch)
+    if animal is not None:
+        for question_txt, answer_txt in questions:
+            question = add_question(question_txt, batch=batch)
+            add_answer(question, answer_txt, animal, batch=batch)
 
 def add_animal(animal_name, batch=False):
     """ Add an animal if not already found, then return it """
@@ -278,25 +292,28 @@ def query_all_responses(question=None, animals=None):
 
         responses = {}
         for entry in entries:
-            animal_name = entry.animal.name
-            if animal_name not in responses:
-                responses[animal_name] = dict(NO_RESPONSE) # set all to defaults
-            responses[animal_name][entry.answer] += 1
+            if entry.animal is not None:
+                animal_name = entry.animal.name
+                if animal_name not in responses:
+                    responses[animal_name] = dict(NO_RESPONSE) # set all to defaults
+                responses[animal_name][entry.answer] += 1
 
         return responses
     except exc.OperationalError as error:
         print("SQLALCHEMY ERROR: ", error)
     return {}
 
+def game_solutions(order):
+    return db.session.query(
+        func.count(GameResult.solution).label('qty'),
+        GameResult.solution).filter(GameResult.solution != '')\
+            .group_by(GameResult.solution)\
+            .order_by(order('qty'))
+
 def game_stats():
     """ Get some stats about the game """
     wins = GameResult.query.filter(GameResult.win.is_(True)).count()
     losses = GameResult.query.filter(GameResult.win.is_(False)).count()
-    top_solutions = db.session.query(
-        func.count(GameResult.solution).label('qty'),
-        GameResult.solution).group_by(GameResult.solution).order_by(desc('qty')).limit(5).all()
-    bot_solutions = db.session.query(
-        func.count(GameResult.solution).label('qty'),
-        GameResult.solution).group_by(GameResult.solution).order_by(asc('qty')).limit(5).all()
-
+    top_solutions = game_solutions(desc).limit(5).all()
+    bot_solutions = game_solutions(asc).limit(5).all()
     return wins, losses, top_solutions, bot_solutions

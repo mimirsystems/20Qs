@@ -1,19 +1,28 @@
 """
     Defines routes
 """
-from functools import wraps
 from random import shuffle
+from os import urandom
+from functools import wraps
 from flask import render_template, session, request, url_for, redirect, flash
-from .server import app, cached
+from .server import app, cached, cache
 from .qa_bot import QaBot, ANSWERS
 from .db import add_question, add_animal, add_answer, game_stats, Animal, get_all
+
+def get_session_id():
+    return ''.join('{:02x}'.format(x) for x in urandom(40))
 
 def with_bot(func):
     @wraps(func)
     def with_bot_wrapper(*args, **kwargs):
-        bot = QaBot(session.get('bot'))
+        session_id = session.get('session_id')
+        if session_id is None:
+            session_id = get_session_id()
+            session['session_id'] = session_id
+        cache_key = 'session/{}'.format(session_id)
+        bot = QaBot(cache.get(cache_key))
         r_value = func(bot, *args, **kwargs)
-        session['bot'] = bot.serialize()
+        cache.set(cache_key, bot.serialize())
         return r_value
     return with_bot_wrapper
 
