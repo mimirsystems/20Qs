@@ -128,6 +128,13 @@ def train(number):
     flash('Thank you for the help!')
     return redirect(url_for('new_game'))
 
+@app.route('/chart')
+
+def chart():
+    labels = ["January", "February", "March", "April", "May", "June", "July", "August"]
+    values = [0, 0.9, 0.8, 0.7, 0.6, 0.4, 0.7, 0.8]
+    return render_template('chart.html', values=values, labels=labels)
+
 @app.route('/debug/animals')
 @cached()
 def debug_animals_list():

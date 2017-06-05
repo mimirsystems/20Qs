@@ -14,11 +14,16 @@
     $( document ).ready(function(){
       $(".button-collapse").sideNav();
 
-      $('input.autocomplete').autocomplete({
+      set_guesses();
+      {% for msg in get_flashed_messages() %}
+        Materialize.toast('{{msg}}', 4000);
+    {% endfor %}
+      if(typeof $('input.autocomplete') === "function") {
+        $('input.autocomplete').autocomplete({
           data: {
             {% for question in questions %}
               "{{question.question}}": null,
-            {% endfor %}
+          {% endfor %}
           },
           limit: 20,
           onAutocomplete: function(val) {
@@ -26,11 +31,7 @@
             console.log(val);
           },
         });
-
-      set_guesses();
-      {% for msg in get_flashed_messages() %}
-        Materialize.toast('{{msg}}', 4000);
-      {% endfor %}
+      }
     });
 
 function toggle_guesses() {
