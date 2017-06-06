@@ -139,8 +139,8 @@ def adjust_guesses(animals, question, answer, weighting=1):
     all_responses = query_all_responses(question=question, animals=animals)
     for animal in animals:
         responses = all_responses.get(animal.name, NO_RESPONSE)
-        update = pow(responses[answer] / sum(responses.values()), weighting)
-        animal.prob *= update
+        update = responses[answer] / sum(responses.values())
+        animal.prob *= pow(update, weighting)
     return normalize_guesses(animals)
 
 def normalize_guesses(animals):

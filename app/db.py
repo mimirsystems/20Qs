@@ -234,12 +234,12 @@ def add_animal(animal_name, batch=False):
 
 def add_question(question_txt, batch=False):
     """ Add a question if not already found, then return it """
+    if question_txt == '':
+        return
+    if question_txt[-1] != '?':
+        question_txt += '?'
     question = Question.query.filter(Question.question == question_txt).first()
     if question is None:
-        if question_txt == '':
-            return
-        if question_txt[-1] != '?':
-            question_txt += '?'
         question = Question(question_txt)
         db.session.add(question)
         if not batch:

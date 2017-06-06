@@ -7,12 +7,13 @@ from functools import wraps
 from flask import render_template, session, request, url_for, redirect, flash
 from .server import app, cached, cache
 from .qa_bot import QaBot, ANSWERS
-from .db import add_question, add_animal, add_answer, game_stats, Animal, get_all
+from .db import add_question, add_animal, add_answer, game_stats, Animal, Question, get_all
 
 def get_session_id():
     return ''.join('{:02x}'.format(x) for x in urandom(40))
 
 def with_bot(func):
+    """ Adds the bot from the session into the args """
     @wraps(func)
     def with_bot_wrapper(*args, **kwargs):
         session_id = session.get('session_id')
@@ -109,9 +110,10 @@ def train(number):
         animals = animals[:number]
 
     if question_txt is None:
+        questions = get_all(Question)
         return render_template(
             'train.html',
-            question=question_txt,
+            questions=questions,
             animals=animals,
             answers=ANSWERS,
             prefix=prefix
@@ -123,8 +125,6 @@ def train(number):
             animal = add_animal(animal_name)
             print(animal, "::", answer_txt)
             add_answer(question_ob, answer_txt, animal)
-        else:
-            print("Unexpected key: {}".format(key))
     flash('Thank you for the help!')
     return redirect(url_for('new_game'))
 

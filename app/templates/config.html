@@ -10,20 +10,19 @@
 {% block scripts %}
   {{ super() }}
   {% include "tracking.html" %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js"></script>
   <script>
-    $( document ).ready(function(){
+    $(function(){
       $(".button-collapse").sideNav();
 
       set_guesses();
       {% for msg in get_flashed_messages() %}
         Materialize.toast('{{msg}}', 4000);
     {% endfor %}
-      if(typeof $('input.autocomplete') === "function") {
+      if(typeof $('input.autocomplete').autocomplete === "function") {
         $('input.autocomplete').autocomplete({
-          data: {
-            {% for question in questions %}
-              "{{question.question}}": null,
-          {% endfor %}
+          data: { {% for question in questions %}
+              "{{question.question}}": null,{% endfor %}
           },
           limit: 20,
           onAutocomplete: function(val) {
