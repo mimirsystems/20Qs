@@ -129,7 +129,7 @@ def chart():
     labels = db.session.query(
         func.DATE(
             GameResult.time_created
-        ).label('date')).group_by('date').all()
+        ).label('date')).group_by('date').order_by(asc('date')).all()
     labels = [date[0] for date in labels]
     query_wins = db.session.query(
         func.DATE(
@@ -137,7 +137,7 @@ def chart():
         ).label('date'),
         GameResult.win,
         func.count(GameResult.win)
-    ).group_by('date').order_by(asc('date')).group_by(GameResult.win)
+    ).group_by('date').group_by(GameResult.win)
     wins = query_wins.all()
     print(wins)
     wins_table = {}
