@@ -21,36 +21,78 @@
       </div>
     </div>
     <div class="row">
-      <div class="col">
+      <div class="col" style="width: 100%">
         <table class="bordered">
           <tr>
-            <th colspan="2">
-              {{top_solutions|length}} most common {{plural(top_solutions|length, 'Animal')}}
-            </th>
+            <th class="center">#Animals</th>
+            <th class="center">#Questions</th>
           </tr>
-          {% for (top_c, top_s) in top_solutions %}
-            <tr>
-              <td>{{to_title(top_s)}}</td>
-              <td class="right">{{top_c}} {{plural(top_c, 'game')}}</td>
-            </tr>
-          {% endfor %}
-        </table>
-      </div>
-      <div class="col right">
-        <table class="bordered">
           <tr>
-            <th colspan="2">
-              {{bot_solutions|length}} least common {{plural(bot_solutions|length, 'Animal')}}
-            </th>
+            <th class="center">{{ num_animals }}</th>
+            <th class="center">{{ num_questions }}</th>
           </tr>
-          {% for (bot_c, bot_s) in bot_solutions %}
-            <tr>
-              <td>{{to_title(bot_s)}}</td>
-              <td class="right">{{bot_c}} {{plural(bot_c, 'game')}}</td>
-            </tr>
-          {% endfor %}
         </table>
       </div>
+    </div>
+    <div class="row">
+      <table class="bordered">
+        <tr>
+          <th colspan="2">
+            {{guessed_right|length}} {{plural(guessed_right|length, 'animal')}} most commonly guessed correctly
+          </th>
+        </tr>
+        {% for (solution, guess, num) in guessed_right %}
+          <tr>
+            <td>{{to_title(solution)}}</td>
+            <td class="right">{{num}} {{plural(num, 'game')}}</td>
+          </tr>
+        {% endfor %}
+      </table>
+    </div>
+    <div class="row">
+      <table class="bordered">
+        <tr>
+          <th colspan="2">
+            {{guessed_wrong|length}} {{plural(guessed_wrong|length, 'animal')}} most commonly guessed incorrectly
+          </th>
+        </tr>
+        {% for (solution, guess, num) in guessed_wrong %}
+          <tr>
+            <td>{{to_title(solution)}} (Guessed {{to_title(guess)}})</td>
+            <td class="right">{{num}} {{plural(num, 'game')}}</td>
+          </tr>
+        {% endfor %}
+      </table>
+    </div>
+    <div class="row">
+      <table class="bordered">
+        <tr>
+          <th colspan="2">
+            {{top_solutions|length}} most common {{plural(top_solutions|length, 'Animal')}}
+          </th>
+        </tr>
+        {% for (top_c, top_s) in top_solutions %}
+          <tr>
+            <td>{{to_title(top_s)}}</td>
+            <td class="right">{{top_c}} {{plural(top_c, 'game')}}</td>
+          </tr>
+        {% endfor %}
+      </table>
+    </div>
+    <div class="row">
+      <table class="bordered">
+        <tr>
+          <th colspan="2">
+            {{bot_solutions|length}} least common {{plural(bot_solutions|length, 'Animal')}}
+          </th>
+        </tr>
+        {% for (bot_c, bot_s) in bot_solutions %}
+          <tr>
+            <td>{{to_title(bot_s)}}</td>
+            <td class="right">{{bot_c}} {{plural(bot_c, 'game')}}</td>
+          </tr>
+        {% endfor %}
+      </table>
     </div>
   </div>
 {% endif %}

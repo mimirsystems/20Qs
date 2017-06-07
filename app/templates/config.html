@@ -4,12 +4,12 @@
 
 {% block metas %}
   {{ super() }}
+  {% include "tracking.html" %}
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 {% endblock %}
 
 {% block scripts %}
   {{ super() }}
-  {% include "tracking.html" %}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js"></script>
   <script>
     $(function(){
