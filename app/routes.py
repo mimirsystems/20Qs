@@ -5,7 +5,7 @@ from random import shuffle
 from os import urandom
 from functools import wraps
 from flask import render_template, session, request, url_for, redirect, flash
-from sqlalchemy import func
+from sqlalchemy import func, asc
 from .server import app, cached, cache
 from .qa_bot import QaBot, ANSWERS
 from .db import add_question, add_animal, add_answer, game_stats,\
@@ -137,7 +137,7 @@ def chart():
         ).label('date'),
         GameResult.win,
         func.count(GameResult.win)
-    ).group_by('date').group_by(GameResult.win)
+    ).group_by('date').order_by(asc('date')).group_by(GameResult.win)
     wins = query_wins.all()
     print(wins)
     wins_table = {}
