@@ -5,16 +5,18 @@ from random import shuffle
 from os import urandom
 from functools import wraps
 from flask import render_template, session, request, url_for, redirect, flash
+from sqlalchemy import func
 from .server import app, cached, cache
 from .qa_bot import QaBot, ANSWERS
-from .db import add_question, add_animal, add_answer, game_stats, Animal, Question, get_all
+from .db import add_question, add_animal, add_answer, game_stats,\
+     Animal, Question, get_all, db, GameResult
 
 def get_session_id():
     return ''.join('{:02x}'.format(x) for x in urandom(40))
 
-def with_bot(func):
+def with_bot(function):
     """ Adds the bot from the session into the args """
-    @wraps(func)
+    @wraps(function)
     def with_bot_wrapper(*args, **kwargs):
         session_id = session.get('session_id')
         if session_id is None:
@@ -22,7 +24,7 @@ def with_bot(func):
             session['session_id'] = session_id
         cache_key = 'session/{}'.format(session_id)
         bot = QaBot(cache.get(cache_key))
-        r_value = func(bot, *args, **kwargs)
+        r_value = function(bot, *args, **kwargs)
         cache.set(cache_key, bot.serialize())
         return r_value
     return with_bot_wrapper
@@ -122,10 +124,34 @@ def train(number):
     return redirect(url_for('new_game'))
 
 @app.route('/chart')
-
+@cached()
 def chart():
-    labels = ["January", "February", "March", "April", "May", "June", "July", "August"]
-    values = [0, 0.9, 0.8, 0.7, 0.6, 0.4, 0.7, 0.8]
+    labels = db.session.query(
+        func.DATE(
+            GameResult.time_created
+        ).label('date')).group_by('date').all()
+    labels = [date[0] for date in labels]
+    query_wins = db.session.query(
+        func.DATE(
+            GameResult.time_created
+        ).label('date'),
+        GameResult.win,
+        func.count(GameResult.win)
+    ).group_by('date').group_by(GameResult.win)
+    wins = query_wins.all()
+    print(wins)
+    wins_table = {}
+    for date, win, g_count in wins:
+        wins_table[date] = wins_table.get(date, {})
+        wins_table[date][win] = g_count
+
+    values = []
+    for label in labels:
+        if label in wins_table:
+            wins = wins_table.get(label, {})
+            values.append(wins.get(True, 0) / (wins.get(True, 1)+wins.get(False, 1)))
+        else:
+            values.append(None)
     return render_template('chart.html', values=values, labels=labels)
 
 @app.route('/debug/animals')
