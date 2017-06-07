@@ -5,7 +5,7 @@ from random import shuffle
 from os import urandom
 from functools import wraps
 from flask import render_template, session, request, url_for, redirect, flash
-from sqlalchemy import func
+from sqlalchemy import func, asc
 from .server import app, cached, cache
 from .qa_bot import QaBot, ANSWERS
 from .db import add_question, add_animal, add_answer, game_stats,\
@@ -129,7 +129,7 @@ def chart():
     labels = db.session.query(
         func.DATE(
             GameResult.time_created
-        ).label('date')).group_by('date').all()
+        ).label('date')).group_by('date').order_by(asc('date')).all()
     labels = [date[0] for date in labels]
     query_wins = db.session.query(
         func.DATE(
