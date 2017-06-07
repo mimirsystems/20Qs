@@ -19,9 +19,5 @@
 {%- endmacro %}
 
 {% macro to_percent(real) -%}
-{% if real < 0 %}0%
-{% elif real > 1 %}100%
-{% else %}
-  {{ '%0.2f' % (real*100) }}%
-{% endif %}
+{% if real < 0 %}0%{% elif real > 1 %}100%{% else %}{{ '%0.2f' % (real*100) }}%{% endif %}
 {%- endmacro %}
