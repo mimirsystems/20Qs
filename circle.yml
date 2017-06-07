@@ -1,0 +1,6 @@
+database:
+  override:
+    - python3 load_db.py
+test:
+  override:
+    - python3 unittests.py
