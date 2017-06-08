@@ -1,4 +1,5 @@
-# 20Qs Bot
+# 20Qs Bot 
+[![CircleCI](https://circleci.com/gh/Cypher1/20Qs/tree/master.svg?style=shield&circle-token=11363c18b6739c511954c89ae158ea4fe529bf86)](https://circleci.com/gh/Cypher1/20Qs/tree/master)
 
 Playing 20Questions with Online Tree Learning and Uncertainty
 
