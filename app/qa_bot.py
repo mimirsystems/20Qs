@@ -111,7 +111,7 @@ def get_entropy(question, animals):
 
     all_responses = query_all_responses(question=question, animals=animals)
     for animal in animals:
-        responses = all_responses.get(animal.name, NO_RESPONSE)
+        responses = all_responses.get(animal.name)
         if responses is not None:
             responses = sorted(
                 responses.items(),
@@ -121,8 +121,6 @@ def get_entropy(question, animals):
             (last, _) = responses[-1]
             response_set[first] += animal.prob
             response_set[last] += (1-animal.prob)
-        else:
-            print("COULDN'T FIND ANIMAL \"{}\"".format(animal.name))
 
     total = sum(response_set.values())
     probs = [count/total for count in response_set.values()]
