@@ -1,7 +1,7 @@
 """ Save all the entries as aggregates """
 
 import csv
-from app.db import Entry
+from app.db import db, Entry
 
 def save_into_csv():
     statistics = read_into_dict()
