@@ -47,5 +47,5 @@ def get_value(answer):
     else:
         return UNSURE
 
-if __name == '__main__':
+if __name__ == '__main__':
     save_into_csv()
