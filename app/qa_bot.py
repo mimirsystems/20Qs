@@ -75,7 +75,9 @@ class QaBot(object):
                 best_q.entropy = split
 
         if best_q is None:
-            return ("Sorry, I don't know this one", [])
+            best_q = Question("Sorry, I don't know this one")
+            best_q.entropy = 0
+            return (best_q, [])
 
         return (best_q, ANSWERS)
 
