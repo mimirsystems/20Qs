@@ -264,6 +264,16 @@ def add_answer(question, answer_txt, animal, batch=False):
         cache.set(key, responses)
     return answer
 
+def merge_animal(source, dest):
+    entries = Entry.query.filter(Entry.animal_id == source.id).all()
+    for ent in entries:
+        ent.animal_id = source.id
+
+    dest.count += source.count
+    db.session.delete(source)
+    db.session.commit()
+    cache.set('all/Animal', None)
+
 @cached(key='all/{0.__name__}')
 def get_all(class_ob):
     try:
