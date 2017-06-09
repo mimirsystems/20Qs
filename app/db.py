@@ -21,13 +21,13 @@ class Entry(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     answer = db.Column(db.String(10), nullable=False)
     time_created = db.Column(db.TIMESTAMP, server_default=db.func.now())
-    question_id = db.Column(db.Integer, db.ForeignKey('questions.id'))
-    animal_id = db.Column(db.Integer, db.ForeignKey('animals.id'))
+    question_id = db.Column(db.Integer, db.ForeignKey('questions.id'), nullable=False)
+    animal_id = db.Column(db.Integer, db.ForeignKey('animals.id'), nullable=False)
 
     question = db.relationship('Question', backref=db.backref('entries', lazy='dynamic'))
     animal = db.relationship('Animal', backref=db.backref('entries', lazy='dynamic'))
 
-    def __init__(self, question, answer, animal=None):
+    def __init__(self, question, answer, animal):
         """
         Constructor for Entry
         :param question: An instance of class question
@@ -37,15 +37,6 @@ class Entry(db.Model):
         question.increment_count()
         self.answer = answer
         self.time_created = datetime.datetime.now()
-        if animal is not None:
-            self.animal = animal
-            animal.increment_count()
-
-    def set_answer(self, animal):
-        """
-        This method updates the answer column for the entry
-        :param animal: An instance of the class Animal
-        """
         self.animal = animal
         animal.increment_count()
 
@@ -264,15 +255,20 @@ def add_answer(question, answer_txt, animal, batch=False):
         cache.set(key, responses)
     return answer
 
-def merge_animal(source, dest):
-    entries = Entry.query.filter(Entry.animal_id == source.id).all()
-    for ent in entries:
-        ent.animal_id = source.id
-
-    dest.count += source.count
-    db.session.delete(source)
-    db.session.commit()
-    cache.set('all/Animal', None)
+def merge_animal(source, dest, do_merge=False):
+    if not isinstance(source, Animal):
+        source = add_animal(source)
+    if not isinstance(dest, Animal):
+        dest = add_animal(dest)
+    print("Source: {} -> Dest: {}".format(source, dest))
+    if do_merge:
+        entries = Entry.query.filter_by(animal=source).all()
+        for ent in entries:
+            ent.animal = dest
+        dest.count += source.count
+        db.session.delete(source)
+        db.session.commit()
+        cache.set('all/Animal', None)
 
 @cached(key='all/{0.__name__}')
 def get_all(class_ob):

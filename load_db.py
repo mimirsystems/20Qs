@@ -2,7 +2,7 @@
 Load the db with a dataset (or multiple)
 """
 
-from app.db import Animal, Question, add_game, get_all
+from app.db import Animal, Question, add_game
 from app.server import db
 
 from datasets.loader import get_games_from_csv
