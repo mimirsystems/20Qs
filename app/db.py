@@ -27,7 +27,7 @@ class Entry(db.Model):
     question = db.relationship('Question', backref=db.backref('entries', lazy='dynamic'))
     animal = db.relationship('Animal', backref=db.backref('entries', lazy='dynamic'))
 
-    def __init__(self, question, answer, animal=None):
+    def __init__(self, question, answer, animal):
         """
         Constructor for Entry
         :param question: An instance of class question
@@ -37,15 +37,6 @@ class Entry(db.Model):
         question.increment_count()
         self.answer = answer
         self.time_created = datetime.datetime.now()
-        if animal is not None:
-            self.animal = animal
-            animal.increment_count()
-
-    def set_answer(self, animal):
-        """
-        This method updates the answer column for the entry
-        :param animal: An instance of the class Animal
-        """
         self.animal = animal
         animal.increment_count()
 
