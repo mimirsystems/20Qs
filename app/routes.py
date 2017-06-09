@@ -155,13 +155,11 @@ def chart():
     return render_template('chart.html', values=values, labels=labels)
 
 @app.route('/debug/animals')
-@cached()
 def debug_animals_list():
     animals = get_all(Animal)
     return str(animals)
 
 @app.route('/debug/questions')
-@cached()
 def debug_questions_list():
     questions = get_all(Question)
     return str(questions)
