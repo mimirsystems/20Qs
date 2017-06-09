@@ -4,7 +4,7 @@
 import unittest
 from sqlalchemy import exc
 
-from app.db import Animal, Question, Entry, GameResult, get_all
+from app.db import Animal, Question, Entry, GameResult, get_all, merge_animal, add_animal
 
 TABLES = [Animal, Question, Entry, GameResult]
 
@@ -41,6 +41,39 @@ class TestDBs(unittest.TestCase):
                     'get_all differed to query.all() for table \'{}\''\
                     .format(table.__name__)
                 )
+
+    def test_merge_move_animals(self):
+        """ Check that moving via merging works properly """
+        entries = sorted([(e.id, e.answer) for e in Entry.query.all()])
+        weird_unique_name = '1234567890'
+
+        weird_animal = add_animal(weird_unique_name)
+        slowworm = add_animal('slowworm')
+
+        merge_animal(slowworm, weird_unique_name, do_merge=True)
+        self.assertEqual(
+            Entry.query.filter(Entry.animal == slowworm).all(),
+            [],
+            "Merge source should not exist"
+        )
+        slowworm = add_animal('slowworm')
+        merge_animal(weird_unique_name, slowworm, do_merge=True)
+        new_entries = sorted([(e.id, e.answer) for e in Entry.query.all()])
+        self.assertEqual(
+            new_entries,
+            entries,
+            "Merge a->b, b->a should result in nop (animal id may change)"
+        )
+        self.assertEqual(
+            Entry.query.filter(Entry.animal == weird_animal).all(),
+            [],
+            "Merge source should not exist"
+        )
+
+    def test_merge_two_animals(self):
+        """ Check that merging two animals works properly """
+        pass
+
 
 if __name__ == '__main__':
     unittest.main()
