@@ -2,7 +2,7 @@
     Set up tables and query functions
 """
 import datetime
-from flask_sqlalchemy import func, desc, asc, exc
+from sqlalchemy import func, desc, asc, exc
 from .server import db, cached, cache, cache_key
 
 ANSWERS = ['Yes', 'No', 'Unsure']

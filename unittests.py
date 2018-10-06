@@ -2,7 +2,7 @@
     Some basic unit tests
 """
 import unittest
-from flask_sqlalchemy.SQLAlchemy import exc
+from sqlalchemy import exc
 
 from app.db import Animal, Question, Entry, GameResult, get_all, merge_animal, add_animal
 
