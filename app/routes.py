@@ -5,7 +5,7 @@ from random import shuffle
 from os import urandom
 from functools import wraps
 from flask import render_template, session, request, url_for, redirect, flash
-from flask_sqlalchemy import func, asc
+from sqlalchemy import func, asc
 from .server import app, cached, cache
 from .qa_bot import QaBot, ANSWERS
 from .db import add_question, add_animal, add_answer, game_stats,\
