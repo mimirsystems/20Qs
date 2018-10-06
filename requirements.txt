@@ -3,12 +3,12 @@ appnope==0.1.0
 astroid==1.5.2
 click==6.7
 decorator==4.0.11
-Flask==0.12.2
+Flask==0.12.3
 Flask-Cache==0.13.1
 Flask-Material==0.1.1
 Flask-Session==0.3.1
-Flask-SQLAlchemy==2.2
-greenlet==0.4.12
+Flask-SQLAlchemy==2.3
+greenlet
 gunicorn==19.6.0
 ipython==5.4.1
 ipython-genutils==0.2.0
@@ -23,7 +23,7 @@ packaging==16.8
 pexpect==4.2.1
 pickleshare==0.7.4
 prompt-toolkit==1.0.14
-psycopg2==2.6.2
+psycopg2==2.7.1
 ptyprocess==0.5.1
 Pygments==2.2.0
 pylint==1.7.1
@@ -31,7 +31,7 @@ pyparsing==2.2.0
 python-binary-memcached==0.26.0
 simplegeneric==0.8.1
 six==1.10.0
-SQLAlchemy==1.1.9
+SQLAlchemy
 traitlets==4.3.2
 wcwidth==0.1.7
 Werkzeug==0.12.2
