@@ -1,6 +1,0 @@
-database:
-  override:
-    - python load_db.py
-test:
-  override:
-    - python unittests.py
