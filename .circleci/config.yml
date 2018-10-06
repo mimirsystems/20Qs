@@ -32,8 +32,8 @@ jobs:
           command: |
             python3 -m venv venv
             . venv/bin/activate
-            pip install --upgrade pip
-            pip install -r requirements.txt
+            pip3 install --upgrade pip
+            pip3 install -r requirements.txt
 
       - save_cache:
           paths:
@@ -44,9 +44,9 @@ jobs:
       - run:
           name: database
           command: |
-            python load_db.py
+            python3 load_db.py
 
       - run:
           name: unittests
           command: |
-            python unittests.py
+            python3 unittests.py
