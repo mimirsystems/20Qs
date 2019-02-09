@@ -12,7 +12,7 @@ from .db import add_question, add_animal, add_answer, game_stats,\
      Animal, Question, get_all, db, GameResult
 
 def get_session_id():
-    return ''.join('{:02x}'.format(x) for x in urandom(40))
+    return ''.join('%02x'%ord(x) for x in urandom(40))
 
 def with_bot(function):
     """ Adds the bot from the session into the args """
