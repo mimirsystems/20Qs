@@ -24,7 +24,8 @@ if MEMCACHE_SERVERS != []:
     app.config['SESSION_MEMCACHED'] = MEMCACHE_SERVERS[0]
 
 # Base config
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:////tmp/20qs.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL',
+                                                       'sqlite:////tmp/20qs.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Extensions
