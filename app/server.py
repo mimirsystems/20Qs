@@ -4,7 +4,7 @@ Sets up the server core
 import os
 from functools import wraps
 from flask import Flask, request
-from flask_cache import Cache
+from flask_caching import Cache
 from flask_material import Material
 from flask_sqlalchemy import SQLAlchemy
 
@@ -44,7 +44,8 @@ app.cache = cache
 
 # Database
 db = SQLAlchemy(app)
-db.create_all()
+with app.app_context():
+    db.create_all()
 
 # Routing
 NAV_ROUTES = ["new_game", "about", "train"]
