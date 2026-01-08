@@ -91,7 +91,7 @@ trove-classifiers==2022.12.22
 typing_extensions==4.4.0
 udiskie==2.4.2
 ufw==0.36.1
-urllib3==1.26.12
+urllib3==2.6.3
 validate-pyproject==0.10.1
 wcwidth==0.2.5
 Werkzeug==2.2.2
